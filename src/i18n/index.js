@@ -54,6 +54,10 @@ const resources = {
         spanish: 'Spanish',
         english: 'English',
         auto: 'Auto (Browser)',
+        appearance: 'Appearance',
+        themeLight: 'Light',
+        themeDark: 'Dark',
+        themeSystem: 'System',
       },
       currencies: {
         USD: 'US Dollar',
@@ -135,6 +139,10 @@ const resources = {
         spanish: 'Español',
         english: 'Inglés',
         auto: 'Automático (Navegador)',
+        appearance: 'Apariencia',
+        themeLight: 'Claro',
+        themeDark: 'Oscuro',
+        themeSystem: 'Sistema',
       },
       currencies: {
         USD: 'Dólar estadounidense',

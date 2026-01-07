@@ -7,14 +7,20 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    Divider,
 } from '@mui/material';
+import {
+    LightMode as LightModeIcon,
+    DarkMode as DarkModeIcon,
+    SettingsBrightness as SystemIcon,
+} from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { usePreferences, RATE_TYPES, RATE_INFO } from '../../contexts/PreferencesContext';
+import { useThemeMode, THEME_MODES } from '../../contexts/ThemeContext';
 
 export default function Settings() {
     const { t, i18n } = useTranslation();
     const { preferences, setFavoriteRate } = usePreferences();
+    const { themeMode, setThemeMode, isDark } = useThemeMode();
 
     const handleRateChange = (event) => {
         setFavoriteRate(event.target.value);
@@ -23,6 +29,12 @@ export default function Settings() {
     const handleLanguageChange = (lang) => {
         i18n.changeLanguage(lang);
     };
+
+    const themeOptions = [
+        { code: THEME_MODES.LIGHT, label: t('settings.themeLight'), icon: <LightModeIcon /> },
+        { code: THEME_MODES.DARK, label: t('settings.themeDark'), icon: <DarkModeIcon /> },
+        { code: THEME_MODES.SYSTEM, label: t('settings.themeSystem'), icon: <SystemIcon /> },
+    ];
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -39,6 +51,62 @@ export default function Settings() {
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
                         {t('settings.title')}
                     </Typography>
+                </CardContent>
+            </Card>
+
+            {/* Theme Selection */}
+            <Card
+                elevation={0}
+                sx={{
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
+            >
+                <CardContent>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                        {t('settings.appearance')}
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        {themeOptions.map((option) => (
+                            <Card
+                                key={option.code}
+                                onClick={() => setThemeMode(option.code)}
+                                sx={{
+                                    flex: 1,
+                                    cursor: 'pointer',
+                                    bgcolor: themeMode === option.code
+                                        ? (isDark ? 'rgba(76, 175, 80, 0.12)' : 'rgba(46, 125, 50, 0.12)')
+                                        : 'background.default',
+                                    border: '2px solid',
+                                    borderColor: themeMode === option.code ? 'primary.main' : 'divider',
+                                    transition: 'all 0.2s ease',
+                                    '&:hover': {
+                                        borderColor: 'primary.main',
+                                    },
+                                }}
+                            >
+                                <CardContent sx={{ textAlign: 'center', py: 2, '&:last-child': { pb: 2 } }}>
+                                    <Box sx={{
+                                        mb: 0.5,
+                                        color: themeMode === option.code ? 'primary.main' : 'text.secondary'
+                                    }}>
+                                        {option.icon}
+                                    </Box>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            fontWeight: themeMode === option.code ? 600 : 400,
+                                            color: themeMode === option.code ? 'primary.main' : 'text.primary',
+                                        }}
+                                    >
+                                        {option.label}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </Box>
                 </CardContent>
             </Card>
 
@@ -95,7 +163,7 @@ export default function Settings() {
                                             py: 0.5,
                                             borderRadius: 1,
                                             '&:hover': {
-                                                bgcolor: 'rgba(255, 255, 255, 0.04)',
+                                                bgcolor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)',
                                             },
                                         }}
                                     />
@@ -131,7 +199,9 @@ export default function Settings() {
                                 sx={{
                                     flex: 1,
                                     cursor: 'pointer',
-                                    bgcolor: i18n.language === lang.code ? 'rgba(76, 175, 80, 0.12)' : 'background.default',
+                                    bgcolor: i18n.language === lang.code
+                                        ? (isDark ? 'rgba(76, 175, 80, 0.12)' : 'rgba(46, 125, 50, 0.12)')
+                                        : 'background.default',
                                     border: '2px solid',
                                     borderColor: i18n.language === lang.code ? 'primary.main' : 'divider',
                                     transition: 'all 0.2s ease',
