@@ -172,7 +172,9 @@ export default function Calculator() {
     };
 
     const handleQuickAmount = (amount) => {
-        handleForeignAmountChange(amount.toString());
+        const currentValue = parseFloat(foreignAmount) || 0;
+        const newValue = currentValue + amount;
+        handleForeignAmountChange(newValue.toFixed(2));
     };
 
     // Get value date
@@ -199,11 +201,14 @@ export default function Calculator() {
             {/* Main Calculator Card - This is what gets captured for screenshot */}
             <Card
                 ref={calculatorRef}
+                data-screenshot="true"
                 elevation={0}
                 sx={{
                     bgcolor: 'background.paper',
                     border: '1px solid',
                     borderColor: 'divider',
+                    minWidth: 320,
+                    overflow: 'visible',
                 }}
             >
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -239,6 +244,43 @@ export default function Calculator() {
                         >
                             1 {rateInfo?.code} = {formatNumber(currentRate.baseValue, 4)} Bs.
                         </Typography>
+                    )}
+
+                    {/* Equivalence Display inside card for screenshot */}
+                    {rateComparison && rateComparison.hasEquivalent && (
+                        <Box
+                            sx={{
+                                mt: 1,
+                                py: 1,
+                                px: 2,
+                                bgcolor: rateComparison.usdtEquivalent ? 'rgba(255, 215, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)',
+                                borderRadius: 2,
+                                textAlign: 'center',
+                            }}
+                        >
+                            {rateComparison.usdtEquivalent > 0 && (
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        fontWeight: 600,
+                                        color: 'warning.main',
+                                    }}
+                                >
+                                    ≈ ₮{formatNumber(rateComparison.usdtEquivalent, 2)} USDT
+                                </Typography>
+                            )}
+                            {rateComparison.bcvEquivalent > 0 && (
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        fontWeight: 600,
+                                        color: 'primary.main',
+                                    }}
+                                >
+                                    ≈ ${formatNumber(rateComparison.bcvEquivalent, 2)} Dólar BCV
+                                </Typography>
+                            )}
+                        </Box>
                     )}
 
                     {/* Action Buttons */}

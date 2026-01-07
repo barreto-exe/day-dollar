@@ -8,19 +8,45 @@ export default function ConversionInput({
     currencyCode,
     disabled = false,
 }) {
-    const handleChange = (e) => {
-        const newValue = e.target.value;
-        // Allow only numbers and decimal point
-        if (newValue === '' || /^\d*\.?\d*$/.test(newValue)) {
-            onChange(newValue);
-        }
+    // Format value for display with 2 decimals
+    const formatDisplayValue = (val) => {
+        if (!val || val === '0') return '';
+        const numVal = parseInt(val, 10) || 0;
+        // Convert cents to decimal format
+        return (numVal / 100).toFixed(2);
     };
 
-    // Format display value for copy
-    const displayValue = value ? parseFloat(value).toLocaleString('es-VE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }) : '';
+    // Store value in cents (integer) for precision
+    const handleChange = (e) => {
+        const inputVal = e.target.value;
+        // Remove all non-digits
+        const digitsOnly = inputVal.replace(/[^\d]/g, '');
+
+        if (digitsOnly === '') {
+            onChange('');
+            return;
+        }
+
+        // Store as cents value
+        const centsValue = parseInt(digitsOnly, 10);
+        // Convert to decimal for parent component
+        const decimalValue = (centsValue / 100).toFixed(2);
+        onChange(decimalValue);
+    };
+
+    // Convert decimal value back to display
+    const getDisplayValue = () => {
+        if (!value || value === '') return '';
+        const numVal = parseFloat(value) || 0;
+        // Format with thousands separator and 2 decimals
+        return numVal.toLocaleString('es-VE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    };
+
+    // Value for copy button (formatted)
+    const copyValue = getDisplayValue() || '0,00';
 
     return (
         <Box
@@ -44,12 +70,15 @@ export default function ConversionInput({
             <TextField
                 fullWidth
                 variant="standard"
-                value={value}
+                value={getDisplayValue()}
                 onChange={handleChange}
                 disabled={disabled}
-                placeholder="0.00"
+                placeholder="0,00"
+                autoComplete="off"
                 inputProps={{
-                    inputMode: 'decimal',
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    autoComplete: 'off',
                     style: {
                         fontSize: '1.75rem',
                         fontWeight: 600,
@@ -60,7 +89,7 @@ export default function ConversionInput({
                     disableUnderline: true,
                     endAdornment: (
                         <InputAdornment position="end">
-                            <CopyButton value={displayValue || '0'} size="small" />
+                            <CopyButton value={copyValue} size="small" />
                         </InputAdornment>
                     ),
                 }}

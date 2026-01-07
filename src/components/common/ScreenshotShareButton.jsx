@@ -14,12 +14,35 @@ export default function ScreenshotShareButton({ targetRef, title, variant = 'out
         setLoading(true);
 
         try {
-            // Capture the element as canvas
-            const canvas = await html2canvas(targetRef.current, {
+            const element = targetRef.current;
+
+            // Get the actual dimensions of the element
+            const rect = element.getBoundingClientRect();
+
+            // Capture the element as canvas with fixed dimensions
+            const canvas = await html2canvas(element, {
                 backgroundColor: '#1E1E1E',
                 scale: 2, // Higher quality
                 logging: false,
                 useCORS: true,
+                width: rect.width,
+                height: rect.height,
+                x: 0,
+                y: 0,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: rect.width,
+                windowHeight: rect.height,
+                // Add padding to prevent clipping
+                onclone: (clonedDoc) => {
+                    const clonedElement = clonedDoc.body.querySelector('[data-screenshot]') || clonedDoc.body.firstElementChild;
+                    if (clonedElement) {
+                        clonedElement.style.padding = '16px';
+                        clonedElement.style.margin = '0';
+                        clonedElement.style.width = '100%';
+                        clonedElement.style.boxSizing = 'border-box';
+                    }
+                },
             });
 
             // Convert to blob
