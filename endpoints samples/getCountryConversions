@@ -1,0 +1,314 @@
+REQUEST BODY
+{
+  "operationName": "getCountryConversions",
+  "variables": {
+    "countryCode": "VE"
+  },
+  "query": "query getCountryConversions($countryCode: String!, $dateSearch: DateSearchInput) {\n  getCountryConversions(\n    payload: {countryCode: $countryCode}\n    dateSearch: $dateSearch\n  ) {\n    _id\n    baseCurrency {\n      code\n      decimalDigits\n      name\n      namePlural\n      rounding\n      symbol\n      symbolNative\n      __typename\n    }\n    country {\n      code\n      dial_code\n      flag\n      name\n      __typename\n    }\n    conversionRates {\n      baseValue\n      official\n      principal\n      rateCurrency {\n        code\n        decimalDigits\n        name\n        rounding\n        symbol\n        symbolNative\n        __typename\n      }\n      rateValue\n      lastBaseValue\n      lastRateValue\n      type\n      usesRateValue\n      increaseDecreasePercentRate {\n        percentValue\n        isDown\n        __typename\n      }\n      increaseDecreasePercentBase {\n        percentValue\n        isDown\n        __typename\n      }\n      __typename\n    }\n    dateBcvFees\n    dateBcv\n    dateParalelo\n    sendNotificationBcvFees\n    sendNotificationBcv\n    sendNotificationParalelo\n    createdAt\n    __typename\n  }\n}"
+}
+
+RESPONSE BODY
+{
+  "data": {
+    "getCountryConversions": {
+      "_id": "695ded785cd608a8a599261f",
+      "baseCurrency": {
+        "code": "VEF",
+        "decimalDigits": 2,
+        "name": "Venezuelan Bolívar",
+        "namePlural": "Venezuelan bolívars",
+        "rounding": 0,
+        "symbol": "Bs",
+        "symbolNative": "Bs",
+        "__typename": "Currency"
+      },
+      "country": {
+        "code": "VE",
+        "dial_code": "+58",
+        "flag": "🇻🇪",
+        "name": "Venezuela",
+        "__typename": "Country"
+      },
+      "conversionRates": [
+        {
+          "baseValue": 0.01,
+          "official": false,
+          "principal": true,
+          "rateCurrency": {
+            "code": "USD",
+            "decimalDigits": 2,
+            "name": "US Dollar",
+            "rounding": 0,
+            "symbol": "$",
+            "symbolNative": "$",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 135.75,
+          "lastRateValue": 0,
+          "type": "PRIMARY",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": -99.99,
+            "isDown": true,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 311.8814,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "USD",
+            "decimalDigits": 2,
+            "name": "US Dollar",
+            "rounding": 0,
+            "symbol": "$",
+            "symbolNative": "$",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 308.1546,
+          "lastRateValue": 0,
+          "type": "SECONDARY",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 1.21,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 311.8814,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "USD",
+            "decimalDigits": 2,
+            "name": "US Dollar",
+            "rounding": 0,
+            "symbol": "$",
+            "symbolNative": "$",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 308.1546,
+          "lastRateValue": 0,
+          "type": "OTHER",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 1.21,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 364.83886172,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "EUR",
+            "decimalDigits": 2,
+            "name": "Euro",
+            "rounding": 0,
+            "symbol": "€",
+            "symbolNative": "€",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 360.50390344,
+          "lastRateValue": 0,
+          "type": "OTHER",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 1.2,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 44.66551141,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "CNY",
+            "decimalDigits": 2,
+            "name": "Chinese Yuan",
+            "rounding": 0,
+            "symbol": "CN¥",
+            "symbolNative": "CN¥",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 44.12988872,
+          "lastRateValue": 0,
+          "type": "OTHER",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 1.21,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 7.24651709,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "TRY",
+            "decimalDigits": 2,
+            "name": "Turkish Lira",
+            "rounding": 0,
+            "symbol": "TL₺",
+            "symbolNative": "TL₺",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 7.16257156,
+          "lastRateValue": 0,
+          "type": "OTHER",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 1.17,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 3.86234184,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "RUB",
+            "decimalDigits": 2,
+            "name": "Russian Ruble",
+            "rounding": 0,
+            "symbol": "RUB",
+            "symbolNative": "₽.",
+            "__typename": "Currency"
+          },
+          "rateValue": 0,
+          "lastBaseValue": 3.81190747,
+          "lastRateValue": 0,
+          "type": "OTHER",
+          "usesRateValue": false,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 1.32,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 0,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "COP",
+            "decimalDigits": 0,
+            "name": "Colombian Peso",
+            "rounding": 0,
+            "symbol": "CO$",
+            "symbolNative": "$",
+            "__typename": "Currency"
+          },
+          "rateValue": 12.64563772,
+          "lastBaseValue": 0,
+          "lastRateValue": 12.59806509,
+          "type": "OTHER",
+          "usesRateValue": true,
+          "increaseDecreasePercentRate": {
+            "percentValue": 0.38,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        },
+        {
+          "baseValue": 0,
+          "official": true,
+          "principal": false,
+          "rateCurrency": {
+            "code": "BRL",
+            "decimalDigits": 2,
+            "name": "Brazilian Real",
+            "rounding": 0,
+            "symbol": "R$",
+            "symbolNative": "R$",
+            "__typename": "Currency"
+          },
+          "rateValue": 0.01877712,
+          "lastBaseValue": 0,
+          "lastRateValue": 0.01879615,
+          "type": "OTHER",
+          "usesRateValue": true,
+          "increaseDecreasePercentRate": {
+            "percentValue": -0.1,
+            "isDown": true,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "increaseDecreasePercentBase": {
+            "percentValue": 0,
+            "isDown": false,
+            "__typename": "IncreaseDecreasePercent"
+          },
+          "__typename": "ConversionRate"
+        }
+      ],
+      "dateBcvFees": 1767765600000,
+      "dateBcv": 1767763320497,
+      "dateParalelo": 1748632537765,
+      "sendNotificationBcvFees": false,
+      "sendNotificationBcv": false,
+      "sendNotificationParalelo": false,
+      "createdAt": 1767763320805,
+      "__typename": "Conversion"
+    }
+  }
+}

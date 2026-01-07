@@ -1,0 +1,26 @@
+REQUEST BODY
+{
+  "operationName": "getBinanceP2PAverages",
+  "variables": {},
+  "query": "query getBinanceP2PAverages {\n  getBinanceP2PAverages {\n    sellAverage\n    buyAverage\n    sellChangePct\n    buyChangePct\n    totalChangePct\n    pagesUsed\n    asset\n    effectiveFrom\n    effectiveTo\n    createdAt\n    updatedAt\n    __typename\n  }\n}"
+}
+
+RESPONSE BODY
+{
+  "data": {
+    "getBinanceP2PAverages": {
+      "sellAverage": 754.35,
+      "buyAverage": 764.34,
+      "sellChangePct": -11.95,
+      "buyChangePct": -12.19,
+      "totalChangePct": -12.07,
+      "pagesUsed": 5,
+      "asset": "USDT",
+      "effectiveFrom": 1767808800000,
+      "effectiveTo": null,
+      "createdAt": 1767808740474,
+      "updatedAt": 1767808740474,
+      "__typename": "P2pAverages"
+    }
+  }
+}
