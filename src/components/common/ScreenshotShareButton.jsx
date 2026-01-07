@@ -1,48 +1,188 @@
-import { useState } from 'react';
-import { Button, CircularProgress } from '@mui/material';
+import { useState, useRef, useCallback } from 'react';
+import { Button, CircularProgress, Box, Typography, Portal } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import { useTranslation } from 'react-i18next';
 import html2canvas from 'html2canvas';
+import { formatNumber } from '../../utils/formatters';
 
-export default function ScreenshotShareButton({ targetRef, title, variant = 'outlined' }) {
-    const { t } = useTranslation();
+// Ghost component that renders the screenshot content in a controlled environment
+function ScreenshotGhostContent({ data, rateLabel }) {
+    const { rateInfo, currentRate, foreignAmount, bsAmount, rateComparison } = data;
+
+    // Format value for display with 2 decimals
+    const formatDisplayValue = (value) => {
+        if (!value || value === '') return '0,00';
+        const numVal = parseFloat(value) || 0;
+        return numVal.toLocaleString('es-VE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    };
+
+    return (
+        <Box
+            sx={{
+                width: 360,
+                bgcolor: '#1E1E1E',
+                p: 3,
+                borderRadius: 2,
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+            }}
+        >
+            {/* Rate Selector Display */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
+                <Box
+                    sx={{
+                        bgcolor: '#4CAF50',
+                        color: '#fff',
+                        px: 3,
+                        py: 1.5,
+                        borderRadius: 3,
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                    }}
+                >
+                    {rateLabel}
+                </Box>
+            </Box>
+
+            {/* Exchange Rate */}
+            {currentRate && (
+                <Typography
+                    sx={{
+                        textAlign: 'center',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '0.875rem',
+                        mb: 2,
+                    }}
+                >
+                    1 {rateInfo?.code} = {formatNumber(currentRate.baseValue, 4)} Bs.
+                </Typography>
+            )}
+
+            {/* Foreign Amount */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Typography
+                    sx={{
+                        minWidth: 40,
+                        fontWeight: 500,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '1.25rem',
+                    }}
+                >
+                    {rateInfo?.symbol || '$'}
+                </Typography>
+                <Typography
+                    sx={{
+                        flex: 1,
+                        textAlign: 'right',
+                        fontSize: '1.75rem',
+                        fontWeight: 600,
+                        color: '#fff',
+                    }}
+                >
+                    {formatDisplayValue(foreignAmount)}
+                </Typography>
+            </Box>
+
+            {/* Bs Amount */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                    sx={{
+                        minWidth: 40,
+                        fontWeight: 500,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '1.25rem',
+                    }}
+                >
+                    Bs
+                </Typography>
+                <Typography
+                    sx={{
+                        flex: 1,
+                        textAlign: 'right',
+                        fontSize: '1.75rem',
+                        fontWeight: 600,
+                        color: '#fff',
+                    }}
+                >
+                    {formatDisplayValue(bsAmount)}
+                </Typography>
+            </Box>
+
+            {/* Equivalence Display */}
+            {rateComparison && rateComparison.hasEquivalent && (
+                <Box
+                    sx={{
+                        mt: 2,
+                        py: 1,
+                        px: 2,
+                        bgcolor: rateComparison.usdtEquivalent ? 'rgba(255, 215, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)',
+                        borderRadius: 2,
+                        textAlign: 'center',
+                    }}
+                >
+                    {rateComparison.usdtEquivalent > 0 && (
+                        <Typography
+                            sx={{
+                                fontWeight: 600,
+                                color: '#FFD700',
+                            }}
+                        >
+                            ≈ ₮{formatNumber(rateComparison.usdtEquivalent, 2)} USDT
+                        </Typography>
+                    )}
+                    {rateComparison.bcvEquivalent > 0 && (
+                        <Typography
+                            sx={{
+                                fontWeight: 600,
+                                color: '#4CAF50',
+                            }}
+                        >
+                            ≈ ${formatNumber(rateComparison.bcvEquivalent, 2)} Dólar BCV
+                        </Typography>
+                    )}
+                </Box>
+            )}
+        </Box>
+    );
+}
+
+export default function ScreenshotShareButton({ screenshotData, title, variant = 'outlined' }) {
+    const { t, i18n } = useTranslation();
     const [loading, setLoading] = useState(false);
+    const [showGhost, setShowGhost] = useState(false);
+    const ghostRef = useRef(null);
+
+    // Get the rate label for display
+    const getRateLabel = useCallback(() => {
+        if (!screenshotData?.rateInfo) return '';
+        return i18n.language === 'en'
+            ? screenshotData.rateInfo.labelEn
+            : screenshotData.rateInfo.label;
+    }, [screenshotData, i18n.language]);
 
     const handleShare = async () => {
-        if (!targetRef?.current) return;
+        if (!screenshotData) return;
 
         setLoading(true);
+        setShowGhost(true);
+
+        // Wait for ghost to render
+        await new Promise(resolve => setTimeout(resolve, 100));
 
         try {
-            const element = targetRef.current;
+            const element = ghostRef.current;
+            if (!element) {
+                throw new Error('Ghost element not found');
+            }
 
-            // Get the actual dimensions of the element
-            const rect = element.getBoundingClientRect();
-
-            // Capture the element as canvas with fixed dimensions
+            // Capture the ghost element as canvas
             const canvas = await html2canvas(element, {
                 backgroundColor: '#1E1E1E',
-                scale: 2, // Higher quality
+                scale: 2,
                 logging: false,
                 useCORS: true,
-                width: rect.width,
-                height: rect.height,
-                x: 0,
-                y: 0,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: rect.width,
-                windowHeight: rect.height,
-                // Add padding to prevent clipping
-                onclone: (clonedDoc) => {
-                    const clonedElement = clonedDoc.body.querySelector('[data-screenshot]') || clonedDoc.body.firstElementChild;
-                    if (clonedElement) {
-                        clonedElement.style.padding = '16px';
-                        clonedElement.style.margin = '0';
-                        clonedElement.style.width = '100%';
-                        clonedElement.style.boxSizing = 'border-box';
-                    }
-                },
             });
 
             // Convert to blob
@@ -78,40 +218,48 @@ export default function ScreenshotShareButton({ targetRef, title, variant = 'out
         } catch (err) {
             if (err.name !== 'AbortError') {
                 console.error('Error sharing screenshot:', err);
-                // Fallback: try to download
-                try {
-                    const canvas = await html2canvas(targetRef.current, {
-                        backgroundColor: '#1E1E1E',
-                        scale: 2,
-                        logging: false,
-                    });
-                    const url = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'day-dollar-conversion.png';
-                    link.click();
-                } catch (downloadErr) {
-                    console.error('Error downloading:', downloadErr);
-                }
             }
         } finally {
             setLoading(false);
+            setShowGhost(false);
         }
     };
 
     return (
-        <Button
-            variant={variant}
-            color="primary"
-            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <ShareIcon />}
-            onClick={handleShare}
-            disabled={loading}
-            sx={{
-                borderColor: 'primary.main',
-                color: 'primary.main',
-            }}
-        >
-            {t('calc.share')}
-        </Button>
+        <>
+            <Button
+                variant={variant}
+                color="primary"
+                startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <ShareIcon />}
+                onClick={handleShare}
+                disabled={loading}
+                sx={{
+                    borderColor: 'primary.main',
+                    color: 'primary.main',
+                }}
+            >
+                {t('calc.share')}
+            </Button>
+
+            {/* Hidden ghost component for screenshot capture */}
+            {showGhost && (
+                <Portal>
+                    <Box
+                        ref={ghostRef}
+                        sx={{
+                            position: 'fixed',
+                            left: -9999,
+                            top: 0,
+                            zIndex: -1,
+                        }}
+                    >
+                        <ScreenshotGhostContent
+                            data={screenshotData}
+                            rateLabel={getRateLabel()}
+                        />
+                    </Box>
+                </Portal>
+            )}
+        </>
     );
 }

@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     Box,
     Card,
     CardContent,
     Typography,
     Button,
-    Divider,
     CircularProgress,
     Chip,
 } from '@mui/material';
@@ -27,7 +26,6 @@ export default function Calculator() {
     const { t, i18n } = useTranslation();
     const { bcvRates, usdtRates, loading, getRateByCode } = useRates();
     const { preferences } = usePreferences();
-    const calculatorRef = useRef(null);
 
     const [selectedRate, setSelectedRate] = useState(preferences.favoriteRate);
     const [foreignAmount, setForeignAmount] = useState('');
@@ -198,10 +196,8 @@ export default function Calculator() {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Main Calculator Card - This is what gets captured for screenshot */}
+            {/* Main Calculator Card */}
             <Card
-                ref={calculatorRef}
-                data-screenshot="true"
                 elevation={0}
                 sx={{
                     bgcolor: 'background.paper',
@@ -217,6 +213,17 @@ export default function Calculator() {
                         selectedRate={selectedRate}
                         onChange={setSelectedRate}
                     />
+
+                    {/* Exchange Rate Display - moved below dropdown */}
+                    {currentRate && (
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ textAlign: 'center', mt: 1.5 }}
+                        >
+                            1 {rateInfo?.code} = {formatNumber(currentRate.baseValue, 4)} Bs.
+                        </Typography>
+                    )}
 
                     {/* Conversion Inputs */}
                     <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -235,55 +242,46 @@ export default function Calculator() {
                         />
                     </Box>
 
-                    {/* Rate Display inside card for screenshot */}
-                    {currentRate && (
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ textAlign: 'center', mt: 2 }}
-                        >
-                            1 {rateInfo?.code} = {formatNumber(currentRate.baseValue, 4)} Bs.
-                        </Typography>
-                    )}
+                    {/* Equivalence Display - always reserve space to prevent layout shift */}
+                    <Box
+                        sx={{
+                            mt: 2,
+                            py: 1,
+                            px: 2,
+                            minHeight: 40,
+                            bgcolor: rateComparison?.hasEquivalent
+                                ? (rateComparison.usdtEquivalent ? 'rgba(255, 215, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)')
+                                : 'transparent',
+                            borderRadius: 2,
+                            textAlign: 'center',
+                            visibility: rateComparison?.hasEquivalent ? 'visible' : 'hidden',
+                        }}
+                    >
+                        {rateComparison?.usdtEquivalent > 0 && (
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: 'warning.main',
+                                }}
+                            >
+                                ≈ ₮{formatNumber(rateComparison.usdtEquivalent, 2)} USDT
+                            </Typography>
+                        )}
+                        {rateComparison?.bcvEquivalent > 0 && (
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    fontWeight: 600,
+                                    color: 'primary.main',
+                                }}
+                            >
+                                ≈ ${formatNumber(rateComparison.bcvEquivalent, 2)} Dólar BCV
+                            </Typography>
+                        )}
+                    </Box>
 
-                    {/* Equivalence Display inside card for screenshot */}
-                    {rateComparison && rateComparison.hasEquivalent && (
-                        <Box
-                            sx={{
-                                mt: 1,
-                                py: 1,
-                                px: 2,
-                                bgcolor: rateComparison.usdtEquivalent ? 'rgba(255, 215, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)',
-                                borderRadius: 2,
-                                textAlign: 'center',
-                            }}
-                        >
-                            {rateComparison.usdtEquivalent > 0 && (
-                                <Typography
-                                    variant="body1"
-                                    sx={{
-                                        fontWeight: 600,
-                                        color: 'warning.main',
-                                    }}
-                                >
-                                    ≈ ₮{formatNumber(rateComparison.usdtEquivalent, 2)} USDT
-                                </Typography>
-                            )}
-                            {rateComparison.bcvEquivalent > 0 && (
-                                <Typography
-                                    variant="body1"
-                                    sx={{
-                                        fontWeight: 600,
-                                        color: 'primary.main',
-                                    }}
-                                >
-                                    ≈ ${formatNumber(rateComparison.bcvEquivalent, 2)} Dólar BCV
-                                </Typography>
-                            )}
-                        </Box>
-                    )}
-
-                    {/* Action Buttons */}
+                    {/* Action Buttons - excluded from screenshot */}
                     <Box
                         sx={{
                             mt: 3,
@@ -291,6 +289,7 @@ export default function Calculator() {
                             gap: 2,
                             justifyContent: 'center',
                         }}
+                        data-exclude-from-screenshot="true"
                     >
                         <Button
                             variant="text"
@@ -303,7 +302,14 @@ export default function Calculator() {
                         </Button>
 
                         <ScreenshotShareButton
-                            targetRef={calculatorRef}
+                            screenshotData={{
+                                selectedRate,
+                                rateInfo,
+                                currentRate,
+                                foreignAmount,
+                                bsAmount,
+                                rateComparison,
+                            }}
                             title="Day Dollar"
                         />
                     </Box>
