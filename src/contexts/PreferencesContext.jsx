@@ -1,6 +1,5 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { useSessionStorage } from '../hooks/useSessionStorage';
 
 const PreferencesContext = createContext(null);
 
@@ -77,20 +76,15 @@ export const RATE_INFO = {
 };
 
 const STORAGE_KEY = 'dayDollar_preferences';
-const SESSION_KEY = 'dayDollar_sessionPrefs';
 
 const DEFAULT_PREFERENCES = {
     favoriteRate: RATE_TYPES.USD_BCV,
     language: 'auto',
-};
-
-const DEFAULT_SESSION_PREFS = {
     useNextRate: false,
 };
 
 export function PreferencesProvider({ children }) {
     const [preferences, setPreferences] = useLocalStorage(STORAGE_KEY, DEFAULT_PREFERENCES);
-    const [sessionPrefs, setSessionPrefs] = useSessionStorage(SESSION_KEY, DEFAULT_SESSION_PREFS);
 
     const updatePreference = (key, value) => {
         setPreferences((prev) => ({
@@ -99,12 +93,10 @@ export function PreferencesProvider({ children }) {
         }));
     };
 
-    const updateSessionPref = (key, value) => {
-        setSessionPrefs((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-    };
+    // Derived sessionPrefs for backward compatibility
+    const sessionPrefs = useMemo(() => ({
+        useNextRate: preferences.useNextRate,
+    }), [preferences.useNextRate]);
 
     const value = useMemo(
         () => ({
@@ -113,7 +105,7 @@ export function PreferencesProvider({ children }) {
             updatePreference,
             setFavoriteRate: (rate) => updatePreference('favoriteRate', rate),
             setLanguage: (lang) => updatePreference('language', lang),
-            setUseNextRate: (useNext) => updateSessionPref('useNextRate', useNext),
+            setUseNextRate: (useNext) => updatePreference('useNextRate', useNext),
         }),
         [preferences, sessionPrefs]
     );
