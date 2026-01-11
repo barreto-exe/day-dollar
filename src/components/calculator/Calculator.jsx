@@ -29,6 +29,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTranslation } from 'react-i18next';
 import { useRates } from '../../contexts/RatesContext';
 import { usePreferences, RATE_TYPES, RATE_INFO } from '../../contexts/PreferencesContext';
@@ -338,17 +339,24 @@ export default function Calculator() {
                                         // Next Rate Button (only if not already in next/custom mode)
                                         (nextRate && !useNextRate && !isCustomDate) && (
                                             <Button
-                                                variant="text"
+                                                variant="outlined"
                                                 color="warning"
                                                 size="small"
                                                 onClick={handleNextRateClick}
+                                                endIcon={<ArrowForwardIcon sx={{ fontSize: '1rem !important' }} />}
                                                 sx={{
-                                                    p: 0,
-                                                    minWidth: 'auto',
                                                     textTransform: 'none',
-                                                    fontWeight: 500,
-                                                    fontSize: '0.8rem',
-                                                    '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+                                                    fontWeight: 600,
+                                                    fontSize: '0.75rem',
+                                                    borderRadius: 2,
+                                                    px: 1.5,
+                                                    py: 0.2,
+                                                    mt: 1,
+                                                    borderWidth: 1.5,
+                                                    '&:hover': {
+                                                        borderWidth: 1.5,
+                                                        bgcolor: 'warning.lighter',
+                                                    }
                                                 }}
                                             >
                                                 {t('nextRate.button')}
