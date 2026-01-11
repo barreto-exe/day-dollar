@@ -203,27 +203,33 @@ export default function Calculator() {
     };
 
     // Get value date based on useNextRate toggle
+    // Helper to get display date
     const getValueDate = () => {
-        if (selectedRate === RATE_TYPES.USDT && usdtRates) {
-            return formatDate(usdtRates.createdAt, i18n.language === 'en' ? 'en-US' : 'es-VE');
+        // If not BCV rate, always show current date
+        if (!isBcvRate) {
+            return formatDate(new Date());
         }
-        // Use dateBcvFees for next rate date, createdAt for current
-        if (useNextRate && bcvRates?.dateBcvFees) {
-            return formatDate(bcvRates.dateBcvFees, i18n.language === 'en' ? 'en-US' : 'es-VE');
-        }
-        // Use createdAt instead of dateBcv since dateBcv is not updating correctly
-        if (bcvRates?.createdAt) {
-            return formatDate(bcvRates.createdAt, i18n.language === 'en' ? 'en-US' : 'es-VE');
-        }
-        return '';
-    };
 
-    // Get next value date for display
-    const getNextValueDate = () => {
-        if (bcvRates?.dateBcvFees) {
-            return formatDate(bcvRates.dateBcvFees, i18n.language === 'en' ? 'en-US' : 'es-VE');
+        if (isCustomDate && selectedDate) {
+            return formatDate(selectedDate);
         }
-        return '';
+
+        if (useNextRate && bcvRates?.dateBcvFees) {
+            return formatDate(new Date(bcvRates.dateBcvFees));
+        }
+
+        if (!bcvRates) return formatDate(new Date());
+
+        // Default Logic (Current Effective Rate)
+        // If the latest doc is Future, we are showing Previous/Current rates (from createdAt date usually)
+        // If the latest doc is Present/Past, we are showing its rates (dateBcvFees)
+        const isFuture = bcvRates.dateBcvFees > new Date().setHours(0, 0, 0, 0);
+
+        if (isFuture) {
+            return formatDate(new Date(bcvRates.createdAt));
+        } else {
+            return formatDate(new Date(bcvRates.dateBcvFees));
+        }
     };
 
     // Handle next rate button click - show modal first
@@ -274,7 +280,7 @@ export default function Calculator() {
                 sx={{
                     bgcolor: 'background.paper',
                     border: '1px solid',
-                    borderColor: (useNextRate || isCustomDate) ? 'warning.main' : 'divider',
+                    borderColor: (isBcvRate && (useNextRate || isCustomDate)) ? 'warning.main' : 'divider',
                 }}
             >
                 <CardContent sx={{ py: 2 }}>
@@ -351,8 +357,8 @@ export default function Calculator() {
                                     {t('nextRate.backToCurrentRate')}
                                 </Button>
                             ) : (
-                                /* Show next rate button only for USD and when not viewing custom date */
-                                nextRate && selectedRate === RATE_TYPES.USD_BCV && (
+                                /* Show next rate button for any BCV rate that has a next rate available */
+                                nextRate && isBcvRate && !isCustomDate && (
                                     <Button
                                         variant="text"
                                         color="warning"
@@ -375,8 +381,8 @@ export default function Calculator() {
                 </CardContent>
             </Card>
 
-            {/* Warning Alert when using next rate or historical date */}
-            {(useNextRate || isCustomDate) && (
+            {/* Warning Alert when using next rate or historical date (BCV only) */}
+            {isBcvRate && (useNextRate || isCustomDate) && (
                 <Alert
                     severity="warning"
                     icon={<WarningAmberIcon />}

@@ -69,8 +69,16 @@ export default function BcvRates() {
 
     const mainRates = allRates.filter((r) => r.isMain);
     const otherRates = allRates.filter((r) => !r.isMain);
-    // Use createdAt instead of dateBcv since dateBcv is not updating correctly
-    const valueDate = formatDate(bcvRates.createdAt, i18n.language === 'en' ? 'en-US' : 'es-VE');
+    // Determine valid date to display based on whether we are showing future or current rates
+    let displayDate;
+    if (selectedDate) {
+        displayDate = selectedDate;
+    } else {
+        const isFuture = bcvRates.dateBcvFees > new Date().setHours(0, 0, 0, 0);
+        displayDate = isFuture ? bcvRates.createdAt : bcvRates.dateBcvFees;
+    }
+
+    const valueDate = formatDate(displayDate, i18n.language === 'en' ? 'en-US' : 'es-VE');
 
     // Build share text
     const getShareText = () => {
