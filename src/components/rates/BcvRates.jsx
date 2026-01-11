@@ -9,7 +9,12 @@ import {
     IconButton,
     Button,
     Alert,
+    useTheme,
+    useMediaQuery,
 } from '@mui/material';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import dayjs from 'dayjs';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -25,25 +30,16 @@ import { formatDate, formatNumber } from '../../utils/formatters';
 export default function BcvRates() {
     const { t, i18n } = useTranslation();
     const { bcvRates, allRates, loading, selectedDate, fetchBcvRatesByDate, clearSelectedDate } = useRates();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [showOther, setShowOther] = useState(false);
-    const dateInputRef = useRef(null);
+    const [datePickerOpen, setDatePickerOpen] = useState(false);
+    const datePickerAnchorRef = useRef(null);
 
-    // Handle click on calendar icon to open date picker
-    const handleCalendarClick = () => {
-        if (dateInputRef.current) {
-            if (dateInputRef.current.showPicker) {
-                dateInputRef.current.showPicker();
-            } else {
-                dateInputRef.current.click();
-            }
-        }
-    };
-
-    // Handle date picker change
-    const handleDateChange = async (event) => {
-        const dateValue = event.target.value;
-        if (dateValue) {
-            const date = new Date(dateValue + 'T12:00:00');
+    // Handle date picker change (receives dayjs object from MUI DatePicker)
+    const handleDateChange = async (newValue) => {
+        if (newValue && newValue.isValid()) {
+            const date = newValue.toDate();
             await fetchBcvRatesByDate(date);
         }
     };
@@ -185,27 +181,39 @@ export default function BcvRates() {
                             </Typography>
                         </Box>
                         {/* Date Picker */}
-                        <Box sx={{ position: 'relative' }}>
-                            <input
-                                ref={dateInputRef}
-                                type="date"
+                        <IconButton
+                            ref={datePickerAnchorRef}
+                            size="small"
+                            onClick={() => setDatePickerOpen(true)}
+                            sx={{ color: 'text.secondary' }}
+                        >
+                            <CalendarTodayIcon />
+                        </IconButton>
+                        {isMobile ? (
+                            <MobileDatePicker
+                                open={datePickerOpen}
+                                onClose={() => setDatePickerOpen(false)}
+                                value={selectedDate ? dayjs(selectedDate) : null}
                                 onChange={handleDateChange}
-                                style={{
-                                    position: 'absolute',
-                                    opacity: 0,
-                                    width: 0,
-                                    height: 0,
-                                    pointerEvents: 'none',
+                                slotProps={{
+                                    textField: { sx: { display: 'none' } },
                                 }}
                             />
-                            <IconButton
-                                size="small"
-                                onClick={handleCalendarClick}
-                                sx={{ color: 'text.secondary' }}
-                            >
-                                <CalendarTodayIcon />
-                            </IconButton>
-                        </Box>
+                        ) : (
+                            <DesktopDatePicker
+                                open={datePickerOpen}
+                                onClose={() => setDatePickerOpen(false)}
+                                value={selectedDate ? dayjs(selectedDate) : null}
+                                onChange={handleDateChange}
+                                slotProps={{
+                                    textField: { sx: { display: 'none' } },
+                                    popper: {
+                                        anchorEl: datePickerAnchorRef.current,
+                                        placement: 'bottom-end',
+                                    },
+                                }}
+                            />
+                        )}
                     </Box>
 
                     {/* Return to current date button */}

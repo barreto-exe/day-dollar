@@ -13,9 +13,13 @@ import {
     DialogContentText,
     DialogActions,
     Alert,
-    TextField,
     IconButton,
+    useTheme,
+    useMediaQuery,
 } from '@mui/material';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import dayjs from 'dayjs';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventIcon from '@mui/icons-material/Event';
@@ -37,25 +41,16 @@ export default function Calculator() {
     const { t, i18n } = useTranslation();
     const { bcvRates, usdtRates, loading, getRateByCode, getNextRateByCode, selectedDate, fetchBcvRatesByDate, clearSelectedDate } = useRates();
     const { preferences, sessionPrefs, setUseNextRate } = usePreferences();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedRate, setSelectedRate] = useState(preferences.favoriteRate);
     const [foreignAmount, setForeignAmount] = useState('');
     const [bsAmount, setBsAmount] = useState('');
     const [activeInput, setActiveInput] = useState(null);
     const [showNextRateModal, setShowNextRateModal] = useState(false);
-    const dateInputRef = useRef(null);
-
-    // Handle click on calendar icon to open date picker
-    const handleCalendarClick = () => {
-        if (dateInputRef.current) {
-            // Try showPicker first (modern browsers), fallback to click
-            if (dateInputRef.current.showPicker) {
-                dateInputRef.current.showPicker();
-            } else {
-                dateInputRef.current.click();
-            }
-        }
-    };
+    const [datePickerOpen, setDatePickerOpen] = useState(false);
+    const datePickerAnchorRef = useRef(null);
 
     // Check if selected rate is a BCV rate (not USDT)
     const isBcvRate = selectedRate !== RATE_TYPES.USDT;
@@ -250,11 +245,10 @@ export default function Calculator() {
         }
     };
 
-    // Handle date picker change
-    const handleDateChange = async (event) => {
-        const dateValue = event.target.value;
-        if (dateValue) {
-            const date = new Date(dateValue + 'T12:00:00');
+    // Handle date picker change (receives dayjs object from MUI DatePicker)
+    const handleDateChange = async (newValue) => {
+        if (newValue && newValue.isValid()) {
+            const date = newValue.toDate();
             await fetchBcvRatesByDate(date);
             setUseNextRate(false); // Reset next rate when selecting a specific date
         }
@@ -294,30 +288,43 @@ export default function Calculator() {
                         </Typography>
 
                         {/* Date Picker for BCV rates */}
-                        {isBcvRate && (
-                            <Box sx={{ position: 'relative' }}>
-                                <input
-                                    ref={dateInputRef}
-                                    type="date"
-                                    onChange={handleDateChange}
-                                    style={{
-                                        position: 'absolute',
-                                        opacity: 0,
-                                        width: 0,
-                                        height: 0,
-                                        pointerEvents: 'none',
-                                    }}
-                                />
+                        {isBcvRate ? (
+                            <>
                                 <IconButton
+                                    ref={datePickerAnchorRef}
                                     size="small"
-                                    onClick={handleCalendarClick}
+                                    onClick={() => setDatePickerOpen(true)}
                                     sx={{ color: 'text.secondary' }}
                                 >
                                     <CalendarTodayIcon />
                                 </IconButton>
-                            </Box>
-                        )}
-                        {!isBcvRate && (
+                                {isMobile ? (
+                                    <MobileDatePicker
+                                        open={datePickerOpen}
+                                        onClose={() => setDatePickerOpen(false)}
+                                        value={selectedDate ? dayjs(selectedDate) : null}
+                                        onChange={handleDateChange}
+                                        slotProps={{
+                                            textField: { sx: { display: 'none' } },
+                                        }}
+                                    />
+                                ) : (
+                                    <DesktopDatePicker
+                                        open={datePickerOpen}
+                                        onClose={() => setDatePickerOpen(false)}
+                                        value={selectedDate ? dayjs(selectedDate) : null}
+                                        onChange={handleDateChange}
+                                        slotProps={{
+                                            textField: { sx: { display: 'none' } },
+                                            popper: {
+                                                anchorEl: datePickerAnchorRef.current,
+                                                placement: 'bottom-end',
+                                            },
+                                        }}
+                                    />
+                                )}
+                            </>
+                        ) : (
                             <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
                         )}
                     </Box>
