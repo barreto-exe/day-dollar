@@ -312,7 +312,11 @@ export default function Calculator() {
                                             size="small"
                                             color="warning"
                                             variant="outlined"
-                                            sx={{ height: 20, fontSize: '0.7rem' }}
+                                            sx={{
+                                                height: 20,
+                                                mt: 1,
+                                                fontSize: '0.7rem'
+                                            }}
                                         />
                                     )}
 
