@@ -36,6 +36,7 @@ export default function AppLayout() {
                     display: 'flex',
                     flexDirection: 'column',
                     minHeight: '100vh',
+                    overflowX: 'hidden',
                 }}
             >
                 <Header onMenuClick={handleDrawerToggle} />
@@ -43,7 +44,7 @@ export default function AppLayout() {
                 <Box
                     sx={{
                         flexGrow: 1,
-                        p: { xs: 2, sm: 3 },
+                        p: { xs: 1, sm: 3 },
                         pt: { xs: 10, sm: 11 },
                         maxWidth: 600,
                         width: '100%',

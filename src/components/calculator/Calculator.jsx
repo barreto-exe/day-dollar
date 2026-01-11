@@ -16,6 +16,7 @@ import {
     IconButton,
     useTheme,
     useMediaQuery,
+    Collapse,
 } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -50,6 +51,7 @@ export default function Calculator() {
     const [activeInput, setActiveInput] = useState(null);
     const [showNextRateModal, setShowNextRateModal] = useState(false);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
+    const [warningDismissed, setWarningDismissed] = useState(false);
     const datePickerAnchorRef = useRef(null);
 
     // Check if selected rate is a BCV rate (not USDT)
@@ -190,6 +192,11 @@ export default function Calculator() {
         }
     }, [selectedRate, currentRate]);
 
+    // Reset warning dismissal when mode changes
+    useEffect(() => {
+        setWarningDismissed(false);
+    }, [useNextRate, selectedDate, selectedRate]);
+
     const handleReset = () => {
         setForeignAmount('');
         setBsAmount('');
@@ -284,117 +291,137 @@ export default function Calculator() {
                 }}
             >
                 <CardContent sx={{ py: 2 }}>
-                    {/* Current/Next/Selected Date Display */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography
-                            variant="body1"
-                            sx={{ textTransform: 'capitalize' }}
-                        >
-                            {getValueDate()}
-                        </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                        <Box>
+                            <Typography
+                                variant="body1"
+                                sx={{ textTransform: 'capitalize', fontWeight: 500 }}
+                            >
+                                {getValueDate()}
+                            </Typography>
 
-                        {/* Date Picker for BCV rates */}
-                        {isBcvRate ? (
-                            <>
-                                <IconButton
-                                    ref={datePickerAnchorRef}
-                                    size="small"
-                                    onClick={() => setDatePickerOpen(true)}
-                                    sx={{ color: 'text.secondary' }}
-                                >
-                                    <CalendarTodayIcon />
-                                </IconButton>
-                                {isMobile ? (
-                                    <MobileDatePicker
-                                        open={datePickerOpen}
-                                        onClose={() => setDatePickerOpen(false)}
-                                        value={selectedDate ? dayjs(selectedDate) : null}
-                                        onChange={handleDateChange}
-                                        slotProps={{
-                                            textField: { sx: { display: 'none' } },
-                                        }}
-                                    />
-                                ) : (
-                                    <DesktopDatePicker
-                                        open={datePickerOpen}
-                                        onClose={() => setDatePickerOpen(false)}
-                                        value={selectedDate ? dayjs(selectedDate) : null}
-                                        onChange={handleDateChange}
-                                        slotProps={{
-                                            textField: { sx: { display: 'none' } },
-                                            popper: {
-                                                anchorEl: datePickerAnchorRef.current,
-                                                placement: 'bottom-end',
-                                            },
-                                        }}
-                                    />
-                                )}
-                            </>
-                        ) : (
-                            <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
-                        )}
-                    </Box>
+                            {/* Status and Actions Row */}
+                            {(isBcvRate && (useNextRate || isCustomDate || nextRate)) && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
 
-                    {/* Next Rate Button, Return Button, or Date Picker Actions */}
-                    {isBcvRate && (
-                        <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                            {/* Show return button if using next rate OR custom date */}
-                            {(useNextRate || isCustomDate) ? (
-                                <Button
-                                    variant="text"
-                                    color="inherit"
-                                    size="small"
-                                    startIcon={<HistoryIcon />}
-                                    onClick={handleReturnToCurrentRate}
-                                    sx={{
-                                        p: 0,
-                                        textTransform: 'none',
-                                        fontWeight: 500,
-                                        color: 'text.secondary',
-                                        justifyContent: 'flex-start',
-                                    }}
-                                >
-                                    {t('nextRate.backToCurrentRate')}
-                                </Button>
-                            ) : (
-                                /* Show next rate button for any BCV rate that has a next rate available */
-                                nextRate && isBcvRate && !isCustomDate && (
-                                    <Button
-                                        variant="text"
-                                        color="warning"
-                                        size="small"
-                                        startIcon={<EventIcon />}
-                                        onClick={handleNextRateClick}
-                                        sx={{
-                                            p: 0,
-                                            textTransform: 'none',
-                                            fontWeight: 500,
-                                            justifyContent: 'flex-start',
-                                        }}
-                                    >
-                                        {t('nextRate.button')}
-                                    </Button>
-                                )
+                                    {/* Status Chip */}
+                                    {(useNextRate || isCustomDate) && (
+                                        <Chip
+                                            label={useNextRate ? t('nextRate.title', 'Tasa Futura') : t('rates.historical', 'Histórica')}
+                                            size="small"
+                                            color="warning"
+                                            variant="outlined"
+                                            sx={{ height: 20, fontSize: '0.7rem' }}
+                                        />
+                                    )}
+
+                                    {/* Return Button */}
+                                    {(useNextRate || isCustomDate) ? (
+                                        <Button
+                                            variant="text"
+                                            color="inherit"
+                                            size="small"
+                                            onClick={handleReturnToCurrentRate}
+                                            sx={{
+                                                p: 0,
+                                                minWidth: 'auto',
+                                                textTransform: 'none',
+                                                fontWeight: 400,
+                                                color: 'text.secondary',
+                                                fontSize: '0.8rem',
+                                                '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+                                            }}
+                                        >
+                                            {t('nextRate.backToCurrentRate')}
+                                        </Button>
+                                    ) : (
+                                        // Next Rate Button (only if not already in next/custom mode)
+                                        (nextRate && !useNextRate && !isCustomDate) && (
+                                            <Button
+                                                variant="text"
+                                                color="warning"
+                                                size="small"
+                                                onClick={handleNextRateClick}
+                                                sx={{
+                                                    p: 0,
+                                                    minWidth: 'auto',
+                                                    textTransform: 'none',
+                                                    fontWeight: 500,
+                                                    fontSize: '0.8rem',
+                                                    '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+                                                }}
+                                            >
+                                                {t('nextRate.button')}
+                                            </Button>
+                                        )
+                                    )}
+                                </Box>
                             )}
                         </Box>
-                    )}
+
+                        {/* Date Picker Trigger */}
+                        <Box sx={{ ml: 2 }}>
+                            {isBcvRate ? (
+                                <>
+                                    <IconButton
+                                        ref={datePickerAnchorRef}
+                                        size="small"
+                                        onClick={() => setDatePickerOpen(true)}
+                                        sx={{ color: 'text.secondary', p: 0.5 }}
+                                    >
+                                        <CalendarTodayIcon fontSize="small" />
+                                    </IconButton>
+                                    {isMobile ? (
+                                        <MobileDatePicker
+                                            open={datePickerOpen}
+                                            onClose={() => setDatePickerOpen(false)}
+                                            value={selectedDate ? dayjs(selectedDate) : null}
+                                            onChange={handleDateChange}
+                                            slotProps={{
+                                                textField: { sx: { display: 'none' } },
+                                            }}
+                                        />
+                                    ) : (
+                                        <DesktopDatePicker
+                                            open={datePickerOpen}
+                                            onClose={() => setDatePickerOpen(false)}
+                                            value={selectedDate ? dayjs(selectedDate) : null}
+                                            onChange={handleDateChange}
+                                            slotProps={{
+                                                textField: { sx: { display: 'none' } },
+                                                popper: {
+                                                    anchorEl: datePickerAnchorRef.current,
+                                                    placement: 'bottom-end',
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                </>
+                            ) : (
+                                <CalendarTodayIcon sx={{ color: 'text.secondary' }} fontSize="small" />
+                            )}
+                        </Box>
+                    </Box>
                 </CardContent>
             </Card>
 
             {/* Warning Alert when using next rate or historical date (BCV only) */}
-            {isBcvRate && (useNextRate || isCustomDate) && (
-                <Alert
-                    severity="warning"
-                    icon={<WarningAmberIcon />}
-                    sx={{
-                        borderRadius: 2,
-                        '& .MuiAlert-message': {
-                            fontSize: '0.875rem',
-                        }
-                    }}
-                >
-                    {useNextRate ? t('nextRate.warning') : t('nextRate.historicalWarning')}
-                </Alert>
+            {isBcvRate && (useNextRate || isCustomDate) && !warningDismissed && (
+                <Collapse in={!warningDismissed}>
+                    <Alert
+                        severity="warning"
+                        icon={<WarningAmberIcon />}
+                        onClose={() => setWarningDismissed(true)}
+                        sx={{
+                            borderRadius: 2,
+                            '& .MuiAlert-message': {
+                                fontSize: '0.875rem',
+                            }
+                        }}
+                    >
+                        {useNextRate ? t('nextRate.warning') : t('nextRate.historicalWarning')}
+                    </Alert>
+                </Collapse>
             )}
 
             {/* Main Calculator Card */}
@@ -404,7 +431,7 @@ export default function Calculator() {
                     bgcolor: 'background.paper',
                     border: '1px solid',
                     borderColor: 'divider',
-                    minWidth: 320,
+                    width: '100%',
                     overflow: 'visible',
                 }}
             >
