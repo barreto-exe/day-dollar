@@ -9,12 +9,14 @@ export function RatesProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null); // null = today/current
 
     const fetchBcvRates = useCallback(async () => {
         try {
             const data = await getCountryConversions('VE');
             setBcvRates(data);
             setLastUpdated(new Date());
+            setSelectedDate(null); // Reset to current
             return data;
         } catch (err) {
             console.error('Error fetching BCV rates:', err);
@@ -22,6 +24,42 @@ export function RatesProvider({ children }) {
             throw err;
         }
     }, []);
+
+    // Fetch rates for a specific date
+    const fetchBcvRatesByDate = useCallback(async (date) => {
+        setLoading(true);
+        setError(null);
+        try {
+            // Create start and end of day timestamps
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            const dateSearch = {
+                startDate: startOfDay.getTime(),
+                endDate: endOfDay.getTime(),
+                filterByField: 'dateBcvFees'
+            };
+
+            const data = await getCountryConversions('VE', dateSearch);
+            setBcvRates(data);
+            setSelectedDate(date);
+            setLastUpdated(new Date());
+            return data;
+        } catch (err) {
+            console.error('Error fetching BCV rates by date:', err);
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Clear selected date and return to current rates
+    const clearSelectedDate = useCallback(async () => {
+        await fetchBcvRates();
+    }, [fetchBcvRates]);
 
     const fetchUsdtRates = useCallback(async () => {
         try {
@@ -69,7 +107,7 @@ export function RatesProvider({ children }) {
         return () => clearTimeout(timeout);
     }, [fetchUsdtRates]);
 
-    // Get rate by currency code
+    // Get rate by currency code (current rate - SECONDARY for USD, OTHER for others)
     const getRateByCode = useCallback((code) => {
         if (!bcvRates?.conversionRates) return null;
 
@@ -85,10 +123,44 @@ export function RatesProvider({ children }) {
             };
         }
 
-        // Find in BCV rates - look for SECONDARY type first (official rate)
+        // For USD, look for SECONDARY type (current official rate)
+        // For other currencies (EUR, CNY, etc.), look for OTHER type
+        let rate;
+        if (code === 'USD') {
+            rate = bcvRates.conversionRates.find(
+                (r) => r.rateCurrency.code === code && r.type === 'SECONDARY'
+            );
+        }
+
+        // Fallback to OTHER type for currencies that don't have SECONDARY
+        if (!rate) {
+            rate = bcvRates.conversionRates.find(
+                (r) => r.rateCurrency.code === code && r.type === 'OTHER'
+            );
+        }
+
+        if (!rate) return null;
+
+        return {
+            code: rate.rateCurrency.code,
+            baseValue: rate.baseValue,
+            symbol: rate.rateCurrency.symbol,
+            changePercent: rate.increaseDecreasePercentBase?.percentValue || 0,
+            isDown: rate.increaseDecreasePercentBase?.isDown || false,
+            lastBaseValue: rate.lastBaseValue,
+        };
+    }, [bcvRates, usdtRates]);
+
+    // Get next rate by currency code (next rate - only for USD which has both SECONDARY and OTHER)
+    const getNextRateByCode = useCallback((code) => {
+        if (!bcvRates?.conversionRates) return null;
+
+        // Only USD has a "next rate" (SECONDARY is current, OTHER is next)
+        // Other currencies only have OTHER so there's no "next" for them
+        if (code !== 'USD') return null;
+
+        // Find the OTHER type for USD (next official rate)
         const rate = bcvRates.conversionRates.find(
-            (r) => r.rateCurrency.code === code && r.type === 'SECONDARY'
-        ) || bcvRates.conversionRates.find(
             (r) => r.rateCurrency.code === code && r.type === 'OTHER'
         );
 
@@ -102,7 +174,7 @@ export function RatesProvider({ children }) {
             isDown: rate.increaseDecreasePercentBase?.isDown || false,
             lastBaseValue: rate.lastBaseValue,
         };
-    }, [bcvRates, usdtRates]);
+    }, [bcvRates]);
 
     // Get all available rates for display
     const allRates = useMemo(() => {
@@ -144,13 +216,17 @@ export function RatesProvider({ children }) {
             loading,
             error,
             lastUpdated,
+            selectedDate,
             fetchAllRates,
             fetchBcvRates,
+            fetchBcvRatesByDate,
+            clearSelectedDate,
             fetchUsdtRates,
             getRateByCode,
+            getNextRateByCode,
             allRates,
         }),
-        [bcvRates, usdtRates, loading, error, lastUpdated, fetchAllRates, fetchBcvRates, fetchUsdtRates, getRateByCode, allRates]
+        [bcvRates, usdtRates, loading, error, lastUpdated, selectedDate, fetchAllRates, fetchBcvRates, fetchBcvRatesByDate, clearSelectedDate, fetchUsdtRates, getRateByCode, getNextRateByCode, allRates]
     );
 
     return (

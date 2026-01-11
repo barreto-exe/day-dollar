@@ -31,11 +31,16 @@ async function executeQuery(operationName, query, variables = {}) {
 
 /**
  * Get country conversion rates (BCV rates)
+ * @param {string} countryCode - Country code (default: 'VE')
+ * @param {Object} dateSearch - Optional date search parameters
+ * @param {number} dateSearch.startDate - Start timestamp
+ * @param {number} dateSearch.endDate - End timestamp
+ * @param {string} dateSearch.filterByField - Field to filter by (e.g., 'dateBcvFees')
  */
-export async function getCountryConversions(countryCode = 'VE') {
+export async function getCountryConversions(countryCode = 'VE', dateSearch = null) {
   const query = `
-    query getCountryConversions($countryCode: String!) {
-      getCountryConversions(payload: {countryCode: $countryCode}) {
+    query getCountryConversions($countryCode: String!, $dateSearch: DateSearchInput) {
+      getCountryConversions(payload: {countryCode: $countryCode}, dateSearch: $dateSearch) {
         _id
         baseCurrency {
           code
@@ -83,7 +88,12 @@ export async function getCountryConversions(countryCode = 'VE') {
     }
   `;
 
-  const data = await executeQuery('getCountryConversions', query, { countryCode });
+  const variables = { countryCode };
+  if (dateSearch) {
+    variables.dateSearch = dateSearch;
+  }
+
+  const data = await executeQuery('getCountryConversions', query, variables);
   return data.getCountryConversions;
 }
 

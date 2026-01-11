@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
     Box,
     Card,
@@ -7,12 +7,23 @@ import {
     Button,
     CircularProgress,
     Chip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Alert,
+    TextField,
+    IconButton,
 } from '@mui/material';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EventIcon from '@mui/icons-material/Event';
+import HistoryIcon from '@mui/icons-material/History';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useTranslation } from 'react-i18next';
 import { useRates } from '../../contexts/RatesContext';
 import { usePreferences, RATE_TYPES, RATE_INFO } from '../../contexts/PreferencesContext';
@@ -24,17 +35,38 @@ import { formatNumber, formatDate, calculateConversion } from '../../utils/forma
 
 export default function Calculator() {
     const { t, i18n } = useTranslation();
-    const { bcvRates, usdtRates, loading, getRateByCode } = useRates();
-    const { preferences } = usePreferences();
+    const { bcvRates, usdtRates, loading, getRateByCode, getNextRateByCode, selectedDate, fetchBcvRatesByDate, clearSelectedDate } = useRates();
+    const { preferences, sessionPrefs, setUseNextRate } = usePreferences();
 
     const [selectedRate, setSelectedRate] = useState(preferences.favoriteRate);
     const [foreignAmount, setForeignAmount] = useState('');
     const [bsAmount, setBsAmount] = useState('');
     const [activeInput, setActiveInput] = useState(null);
+    const [showNextRateModal, setShowNextRateModal] = useState(false);
+    const dateInputRef = useRef(null);
 
-    // Get current rate info
+    // Handle click on calendar icon to open date picker
+    const handleCalendarClick = () => {
+        if (dateInputRef.current) {
+            // Try showPicker first (modern browsers), fallback to click
+            if (dateInputRef.current.showPicker) {
+                dateInputRef.current.showPicker();
+            } else {
+                dateInputRef.current.click();
+            }
+        }
+    };
+
+    // Check if selected rate is a BCV rate (not USDT)
+    const isBcvRate = selectedRate !== RATE_TYPES.USDT;
+    const useNextRate = sessionPrefs.useNextRate && isBcvRate;
+
+    // Get current rate info based on useNextRate toggle
     const rateInfo = RATE_INFO[selectedRate];
-    const currentRate = getRateByCode(rateInfo?.code);
+    const currentRate = useNextRate
+        ? getNextRateByCode(rateInfo?.code)
+        : getRateByCode(rateInfo?.code);
+    const nextRate = isBcvRate ? getNextRateByCode(rateInfo?.code) : null;
 
     // Calculate gap between selected rate and USDT (or BCV if USDT is selected)
     const rateComparison = useMemo(() => {
@@ -175,16 +207,62 @@ export default function Calculator() {
         handleForeignAmountChange(newValue.toFixed(2));
     };
 
-    // Get value date
+    // Get value date based on useNextRate toggle
     const getValueDate = () => {
         if (selectedRate === RATE_TYPES.USDT && usdtRates) {
             return formatDate(usdtRates.createdAt, i18n.language === 'en' ? 'en-US' : 'es-VE');
         }
-        if (bcvRates?.dateBcv) {
-            return formatDate(bcvRates.dateBcv, i18n.language === 'en' ? 'en-US' : 'es-VE');
+        // Use dateBcvFees for next rate date, createdAt for current
+        if (useNextRate && bcvRates?.dateBcvFees) {
+            return formatDate(bcvRates.dateBcvFees, i18n.language === 'en' ? 'en-US' : 'es-VE');
+        }
+        // Use createdAt instead of dateBcv since dateBcv is not updating correctly
+        if (bcvRates?.createdAt) {
+            return formatDate(bcvRates.createdAt, i18n.language === 'en' ? 'en-US' : 'es-VE');
         }
         return '';
     };
+
+    // Get next value date for display
+    const getNextValueDate = () => {
+        if (bcvRates?.dateBcvFees) {
+            return formatDate(bcvRates.dateBcvFees, i18n.language === 'en' ? 'en-US' : 'es-VE');
+        }
+        return '';
+    };
+
+    // Handle next rate button click - show modal first
+    const handleNextRateClick = () => {
+        setShowNextRateModal(true);
+    };
+
+    // Confirm using next rate
+    const handleConfirmNextRate = () => {
+        setUseNextRate(true);
+        setShowNextRateModal(false);
+    };
+
+    // Return to current rate/date
+    const handleReturnToCurrentRate = async () => {
+        setUseNextRate(false);
+        if (selectedDate) {
+            await clearSelectedDate();
+        }
+    };
+
+    // Handle date picker change
+    const handleDateChange = async (event) => {
+        const dateValue = event.target.value;
+        if (dateValue) {
+            const date = new Date(dateValue + 'T12:00:00');
+            await fetchBcvRatesByDate(date);
+            setUseNextRate(false); // Reset next rate when selecting a specific date
+        }
+    };
+
+    // Check if viewing historical or future rate
+    const isHistoricalDate = selectedDate && selectedDate < new Date();
+    const isCustomDate = selectedDate !== null;
 
     if (loading && !bcvRates) {
         return (
@@ -329,10 +407,11 @@ export default function Calculator() {
                 sx={{
                     bgcolor: 'background.paper',
                     border: '1px solid',
-                    borderColor: 'divider',
+                    borderColor: (useNextRate || isCustomDate) ? 'warning.main' : 'divider',
                 }}
             >
                 <CardContent sx={{ py: 2 }}>
+                    {/* Current/Next/Selected Date Display */}
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography
                             variant="body1"
@@ -340,10 +419,97 @@ export default function Calculator() {
                         >
                             {getValueDate()}
                         </Typography>
-                        <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
+
+                        {/* Date Picker for BCV rates */}
+                        {isBcvRate && (
+                            <Box sx={{ position: 'relative' }}>
+                                <input
+                                    ref={dateInputRef}
+                                    type="date"
+                                    onChange={handleDateChange}
+                                    style={{
+                                        position: 'absolute',
+                                        opacity: 0,
+                                        width: 0,
+                                        height: 0,
+                                        pointerEvents: 'none',
+                                    }}
+                                />
+                                <IconButton
+                                    size="small"
+                                    onClick={handleCalendarClick}
+                                    sx={{ color: 'text.secondary' }}
+                                >
+                                    <CalendarTodayIcon />
+                                </IconButton>
+                            </Box>
+                        )}
+                        {!isBcvRate && (
+                            <CalendarTodayIcon sx={{ color: 'text.secondary' }} />
+                        )}
                     </Box>
+
+                    {/* Next Rate Button, Return Button, or Date Picker Actions */}
+                    {isBcvRate && (
+                        <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                            {/* Show return button if using next rate OR custom date */}
+                            {(useNextRate || isCustomDate) ? (
+                                <Button
+                                    variant="text"
+                                    color="inherit"
+                                    size="small"
+                                    startIcon={<HistoryIcon />}
+                                    onClick={handleReturnToCurrentRate}
+                                    sx={{
+                                        p: 0,
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                        color: 'text.secondary',
+                                        justifyContent: 'flex-start',
+                                    }}
+                                >
+                                    {t('nextRate.backToCurrentRate')}
+                                </Button>
+                            ) : (
+                                /* Show next rate button only for USD and when not viewing custom date */
+                                nextRate && selectedRate === RATE_TYPES.USD_BCV && (
+                                    <Button
+                                        variant="text"
+                                        color="warning"
+                                        size="small"
+                                        startIcon={<EventIcon />}
+                                        onClick={handleNextRateClick}
+                                        sx={{
+                                            p: 0,
+                                            textTransform: 'none',
+                                            fontWeight: 500,
+                                            justifyContent: 'flex-start',
+                                        }}
+                                    >
+                                        {t('nextRate.button')}
+                                    </Button>
+                                )
+                            )}
+                        </Box>
+                    )}
                 </CardContent>
             </Card>
+
+            {/* Warning Alert when using next rate or historical date */}
+            {(useNextRate || isCustomDate) && (
+                <Alert
+                    severity="warning"
+                    icon={<WarningAmberIcon />}
+                    sx={{
+                        borderRadius: 2,
+                        '& .MuiAlert-message': {
+                            fontSize: '0.875rem',
+                        }
+                    }}
+                >
+                    {useNextRate ? t('nextRate.warning') : t('nextRate.historicalWarning')}
+                </Alert>
+            )}
 
             {/* Rate Comparison Card - Shows USDT gap for all applicable rates */}
             {rateComparison && (
@@ -430,6 +596,46 @@ export default function Calculator() {
                     </CardContent>
                 </Card>
             )}
+
+            {/* Next Rate Confirmation Modal */}
+            <Dialog
+                open={showNextRateModal}
+                onClose={() => setShowNextRateModal(false)}
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        p: 1,
+                    }
+                }}
+            >
+                <DialogTitle sx={{ fontWeight: 600 }}>
+                    {t('nextRate.modalTitle')}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {t('nextRate.modalDescription')}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2, flexDirection: 'column', gap: 1 }}>
+                    <Button
+                        onClick={handleConfirmNextRate}
+                        variant="contained"
+                        color="warning"
+                        fullWidth
+                        sx={{ fontWeight: 600 }}
+                    >
+                        {t('nextRate.useNextRate')}
+                    </Button>
+                    <Button
+                        onClick={() => setShowNextRateModal(false)}
+                        variant="outlined"
+                        color="inherit"
+                        fullWidth
+                    >
+                        {t('nextRate.continueWithCurrent')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
