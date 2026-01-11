@@ -330,6 +330,7 @@ export default function Calculator() {
                                                 fontWeight: 400,
                                                 color: 'text.secondary',
                                                 fontSize: '0.8rem',
+                                                mt: 1,
                                                 '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
                                             }}
                                         >
