@@ -1,29 +1,41 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getCountryConversions, getBinanceP2PAverages } from '../api/graphql';
+import { useNotification } from './NotificationContext';
 
 const RatesContext = createContext(null);
 
 export function RatesProvider({ children }) {
+    const { t } = useTranslation();
+    const { showNotification } = useNotification();
     const [bcvRates, setBcvRates] = useState(null);
     const [usdtRates, setUsdtRates] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null); // null = today/current
+    const notifiedCacheRef = useRef(false); // Track if we've shown cache notification this session
 
     const fetchBcvRates = useCallback(async () => {
         try {
-            const data = await getCountryConversions('VE');
-            setBcvRates(data);
+            const result = await getCountryConversions('VE');
+            setBcvRates(result.data);
             setLastUpdated(new Date());
             setSelectedDate(null); // Reset to current
-            return data;
+
+            // Show notification if using cached data (only once per session)
+            if (result.fromCache && !notifiedCacheRef.current) {
+                showNotification(t('cache.usingCachedData'), 'warning');
+                notifiedCacheRef.current = true;
+            }
+
+            return result.data;
         } catch (err) {
             console.error('Error fetching BCV rates:', err);
             setError(err.message);
             throw err;
         }
-    }, []);
+    }, [showNotification, t]);
 
     // Fetch rates for a specific date
     const fetchBcvRatesByDate = useCallback(async (date) => {
@@ -45,19 +57,25 @@ export function RatesProvider({ children }) {
                 filterByField: 'dateBcvFees'
             };
 
-            const data = await getCountryConversions('VE', dateSearch);
-            setBcvRates(data);
+            const result = await getCountryConversions('VE', dateSearch);
+            setBcvRates(result.data);
+
+            // Show notification if using cached data
+            if (result.fromCache && !notifiedCacheRef.current) {
+                showNotification(t('cache.usingCachedData'), 'warning');
+                notifiedCacheRef.current = true;
+            }
 
             // Update selected date to the ACTUAL found date (handling fallback)
             // If data is found, use its dateBcvFees. If not (shouldn't happen with widen search unless very old), keep original
-            if (data?.dateBcvFees) {
-                setSelectedDate(new Date(data.dateBcvFees));
+            if (result.data?.dateBcvFees) {
+                setSelectedDate(new Date(result.data.dateBcvFees));
             } else {
                 setSelectedDate(date);
             }
 
             setLastUpdated(new Date());
-            return data;
+            return result.data;
         } catch (err) {
             console.error('Error fetching BCV rates by date:', err);
             setError(err.message);
@@ -65,7 +83,7 @@ export function RatesProvider({ children }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [showNotification, t]);
 
     // Clear selected date and return to current rates
     const clearSelectedDate = useCallback(async () => {
@@ -74,15 +92,22 @@ export function RatesProvider({ children }) {
 
     const fetchUsdtRates = useCallback(async () => {
         try {
-            const data = await getBinanceP2PAverages();
-            setUsdtRates(data);
-            return data;
+            const result = await getBinanceP2PAverages();
+            setUsdtRates(result.data);
+
+            // Show notification if using cached data
+            if (result.fromCache && !notifiedCacheRef.current) {
+                showNotification(t('cache.usingCachedData'), 'warning');
+                notifiedCacheRef.current = true;
+            }
+
+            return result.data;
         } catch (err) {
             console.error('Error fetching USDT rates:', err);
             setError(err.message);
             throw err;
         }
-    }, []);
+    }, [showNotification, t]);
 
     const fetchAllRates = useCallback(async () => {
         setLoading(true);

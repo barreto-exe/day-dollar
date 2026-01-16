@@ -89,6 +89,9 @@ const resources = {
         cancel: 'Cancel',
         graph: 'Chart',
       },
+      cache: {
+        usingCachedData: 'Connection issues. Showing last available data.',
+      },
       days: {
         monday: 'Monday',
         tuesday: 'Tuesday',
@@ -184,6 +187,9 @@ const resources = {
         save: 'Guardar',
         cancel: 'Cancelar',
         graph: 'Gráfica',
+      },
+      cache: {
+        usingCachedData: 'Problemas de conexión. Mostrando última data disponible.',
       },
       days: {
         monday: 'Lunes',
