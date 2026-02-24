@@ -12,6 +12,7 @@ import {
 import CalculateIcon from '@mui/icons-material/Calculate';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,7 @@ const menuItems = [
     { path: '/', icon: <CalculateIcon />, labelKey: 'nav.calculator' },
     { path: '/bcv-rates', icon: <ShowChartIcon />, labelKey: 'nav.bcvRates' },
     { path: '/usdt-rates', icon: <CurrencyBitcoinIcon />, labelKey: 'nav.usdtRates' },
+    { path: '/history', icon: <QueryStatsIcon />, labelKey: 'nav.history' },
     { path: '/settings', icon: <SettingsIcon />, labelKey: 'nav.settings' },
 ];
 

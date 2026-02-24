@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getCountryConversions, getBinanceP2PAverages } from '../api/graphql';
+import { getCountryConversions, getBinanceP2PAverages, getAppStatistics, getUsdtHistoricalData } from '../api/graphql';
 import { useNotification } from './NotificationContext';
 
 const RatesContext = createContext(null);
@@ -14,6 +14,10 @@ export function RatesProvider({ children }) {
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null); // null = today/current
+    const [bcvHistory, setBcvHistory] = useState(null);
+    const [usdtHistoryByRange, setUsdtHistoryByRange] = useState({});
+    const [historyLoading, setHistoryLoading] = useState(false);
+    const [historyError, setHistoryError] = useState(null);
     const notifiedCacheRef = useRef(false); // Track if we've shown cache notification this session
 
     const fetchBcvRates = useCallback(async () => {
@@ -108,6 +112,61 @@ export function RatesProvider({ children }) {
             throw err;
         }
     }, [showNotification, t]);
+
+    const fetchBcvHistory = useCallback(async () => {
+        try {
+            const result = await getAppStatistics('VE');
+            setBcvHistory(result.data);
+
+            if (result.fromCache && !notifiedCacheRef.current) {
+                showNotification(t('cache.usingCachedData'), 'warning');
+                notifiedCacheRef.current = true;
+            }
+
+            return result.data;
+        } catch (err) {
+            console.error('Error fetching BCV history:', err);
+            setHistoryError(err.message);
+            throw err;
+        }
+    }, [showNotification, t]);
+
+    const fetchUsdtHistoryByRange = useCallback(async (range = '3M') => {
+        try {
+            const result = await getUsdtHistoricalData(range);
+
+            setUsdtHistoryByRange((prev) => ({
+                ...prev,
+                [range]: result.data,
+            }));
+
+            if (result.fromCache && !notifiedCacheRef.current) {
+                showNotification(t('cache.usingCachedData'), 'warning');
+                notifiedCacheRef.current = true;
+            }
+
+            return result.data;
+        } catch (err) {
+            console.error(`Error fetching USDT history (${range}):`, err);
+            setHistoryError(err.message);
+            throw err;
+        }
+    }, [showNotification, t]);
+
+    const fetchHistoryData = useCallback(async (range = '3M') => {
+        setHistoryLoading(true);
+        setHistoryError(null);
+        try {
+            await Promise.all([
+                bcvHistory ? Promise.resolve(bcvHistory) : fetchBcvHistory(),
+                fetchUsdtHistoryByRange(range),
+            ]);
+        } catch (err) {
+            // Error already set in individual fetch functions
+        } finally {
+            setHistoryLoading(false);
+        }
+    }, [bcvHistory, fetchBcvHistory, fetchUsdtHistoryByRange]);
 
     const fetchAllRates = useCallback(async () => {
         setLoading(true);
@@ -303,8 +362,12 @@ export function RatesProvider({ children }) {
         () => ({
             bcvRates,
             usdtRates,
+            bcvHistory,
+            usdtHistoryByRange,
             loading,
+            historyLoading,
             error,
+            historyError,
             lastUpdated,
             selectedDate,
             fetchAllRates,
@@ -312,11 +375,14 @@ export function RatesProvider({ children }) {
             fetchBcvRatesByDate,
             clearSelectedDate,
             fetchUsdtRates,
+            fetchHistoryData,
+            fetchBcvHistory,
+            fetchUsdtHistoryByRange,
             getRateByCode,
             getNextRateByCode,
             allRates,
         }),
-        [bcvRates, usdtRates, loading, error, lastUpdated, selectedDate, fetchAllRates, fetchBcvRates, fetchBcvRatesByDate, clearSelectedDate, fetchUsdtRates, getRateByCode, getNextRateByCode, allRates]
+        [bcvRates, usdtRates, bcvHistory, usdtHistoryByRange, loading, historyLoading, error, historyError, lastUpdated, selectedDate, fetchAllRates, fetchBcvRates, fetchBcvRatesByDate, clearSelectedDate, fetchUsdtRates, fetchHistoryData, fetchBcvHistory, fetchUsdtHistoryByRange, getRateByCode, getNextRateByCode, allRates]
     );
 
     return (

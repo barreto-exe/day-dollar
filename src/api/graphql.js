@@ -186,6 +186,80 @@ export async function getBinanceP2PAverages() {
 }
 
 /**
+ * Get BCV historical statistics for conversions
+ * @param {string} countryCode - Country code (default: 'VE')
+ */
+export async function getAppStatistics(countryCode = 'VE') {
+  const query = `
+    query getAppStatistics($countryCode: String!) {
+      getAppStatistics(payload: {countryCode: $countryCode, type: "CONVERSIONS"}) {
+        _id
+        last90Days {
+          currencies {
+            baseValue
+            rateValue
+            rateCurrencyCode
+            type
+            usesRateValue
+          }
+          date
+        }
+        last365Days {
+          currencies {
+            baseValue
+            rateValue
+            rateCurrencyCode
+            type
+            usesRateValue
+          }
+          date
+        }
+        country {
+          code
+          dial_code
+          flag
+          name
+        }
+        type
+        createdAt
+      }
+    }
+  `;
+
+  const result = await executeQuery('getAppStatistics', query, { countryCode });
+  return {
+    data: result.data.getAppStatistics,
+    fromCache: result.fromCache,
+  };
+}
+
+/**
+ * Get USDT historical data by range
+ * @param {'24H'|'7D'|'1M'|'3M'} range - Time range for historical data
+ */
+export async function getUsdtHistoricalData(range = '3M') {
+  const query = `
+    query getUsdtHistoricalData($range: String!) {
+      getUsdtHistoricalData(range: $range) {
+        data {
+          date
+          averageValue
+          sellAverage
+          buyAverage
+        }
+        range
+      }
+    }
+  `;
+
+  const result = await executeQuery('getUsdtHistoricalData', query, { range });
+  return {
+    data: result.data.getUsdtHistoricalData,
+    fromCache: result.fromCache,
+  };
+}
+
+/**
  * Get all rates combined (BCV + USDT)
  */
 export async function getAllRates(countryCode = 'VE') {

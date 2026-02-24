@@ -8,6 +8,7 @@ import AppLayout from './components/layout/AppLayout';
 import Calculator from './components/calculator/Calculator';
 import BcvRates from './components/rates/BcvRates';
 import UsdtRates from './components/rates/UsdtRates';
+import HistoryPanel from './components/history/HistoryPanel';
 import Settings from './components/settings/Settings';
 import 'dayjs/locale/es';
 
@@ -22,6 +23,7 @@ function App() {
                                 <Route index element={<Calculator />} />
                                 <Route path="bcv-rates" element={<BcvRates />} />
                                 <Route path="usdt-rates" element={<UsdtRates />} />
+                                <Route path="history" element={<HistoryPanel />} />
                                 <Route path="settings" element={<Settings />} />
                             </Route>
                         </Routes>
