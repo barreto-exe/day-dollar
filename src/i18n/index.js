@@ -107,6 +107,11 @@ const resources = {
       cache: {
         usingCachedData: 'Connection issues. Showing last available data.',
       },
+      announcements: {
+        whatsNew: "What's New",
+        gotIt: 'Got it',
+        viewsCounter: '{{count}}/{{max}} views',
+      },
       days: {
         monday: 'Monday',
         tuesday: 'Tuesday',
@@ -220,6 +225,11 @@ const resources = {
       },
       cache: {
         usingCachedData: 'Problemas de conexión. Mostrando última data disponible.',
+      },
+      announcements: {
+        whatsNew: 'Novedades',
+        gotIt: 'Entendido',
+        viewsCounter: '{{count}}/{{max}} vistas',
       },
       days: {
         monday: 'Lunes',

@@ -1,0 +1,28 @@
+[
+  {
+    "version": "1.1.0-history-panel",
+    "releasedAt": "2026-02-24",
+    "title": {
+      "es": "Nuevo: Historial de Tasas",
+      "en": "New: Rates History"
+    },
+    "description": {
+      "es": "Ahora tienes un panel unificado para explorar la evolución de tasas BCV y USDT.",
+      "en": "You now have a unified panel to explore BCV and USDT rate history."
+    },
+    "items": [
+      {
+        "es": "Nueva sección \"Historial\" en el menú lateral con gráfica unificada.",
+        "en": "New \"History\" section in the sidebar with a unified chart."
+      },
+      {
+        "es": "Activa o desactiva series (Dólar BCV, Euro BCV y USDT) y personaliza colores.",
+        "en": "Toggle series (BCV Dollar, BCV Euro, and USDT) and customize colors."
+      },
+      {
+        "es": "Interacción por hover/click para ver valores y brechas por punto.",
+        "en": "Hover/click interaction to view point values and gaps."
+      }
+    ]
+  }
+]

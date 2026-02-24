@@ -81,6 +81,11 @@ const DEFAULT_PREFERENCES = {
     favoriteRate: RATE_TYPES.USD_BCV,
     language: 'auto',
     useNextRate: false,
+    historySeriesVisibility: {
+        bcvUsd: true,
+        bcvEur: true,
+        usdt: true,
+    },
 };
 
 export function PreferencesProvider({ children }) {
@@ -106,6 +111,7 @@ export function PreferencesProvider({ children }) {
             setFavoriteRate: (rate) => updatePreference('favoriteRate', rate),
             setLanguage: (lang) => updatePreference('language', lang),
             setUseNextRate: (useNext) => updatePreference('useNextRate', useNext),
+            setHistorySeriesVisibility: (visibility) => updatePreference('historySeriesVisibility', visibility),
         }),
         [preferences, sessionPrefs]
     );

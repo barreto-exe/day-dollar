@@ -28,6 +28,7 @@ import {
     Tooltip,
 } from 'recharts';
 import { useRates } from '../../contexts/RatesContext';
+import { usePreferences } from '../../contexts/PreferencesContext';
 import { formatNumber } from '../../utils/formatters';
 import { buildUnifiedHistoryData } from '../../utils/history';
 
@@ -140,23 +141,28 @@ function CompactTooltip({ active, payload, label, locale, range, activeSeries })
 export default function HistoryPanel() {
     const { t, i18n } = useTranslation();
     const theme = useTheme();
+    const { preferences, setHistorySeriesVisibility } = usePreferences();
     const isTouch = useMemo(() => window.matchMedia('(hover: none)').matches, []);
 
     const {
         bcvHistory,
         usdtHistoryByRange,
+        getRateByCode,
+        usdtRates,
         historyLoading,
         historyError,
         fetchHistoryData,
     } = useRates();
 
     const [range, setRange] = useState('3M');
-    const [showUsdBcv, setShowUsdBcv] = useState(true);
-    const [showEurBcv, setShowEurBcv] = useState(true);
-    const [showUsdt, setShowUsdt] = useState(true);
     const [lineColors, setLineColors] = useState(DEFAULT_LINE_COLORS);
     const [hoveredPoint, setHoveredPoint] = useState(null);
     const [lockedPoint, setLockedPoint] = useState(null);
+
+    const historySeriesVisibility = preferences.historySeriesVisibility || {};
+    const showUsdBcv = historySeriesVisibility.bcvUsd ?? true;
+    const showEurBcv = historySeriesVisibility.bcvEur ?? true;
+    const showUsdt = historySeriesVisibility.usdt ?? true;
 
     useEffect(() => {
         fetchHistoryData(range);
@@ -168,12 +174,29 @@ export default function HistoryPanel() {
     }, [range, showUsdBcv, showEurBcv, showUsdt]);
 
     const historyData = useMemo(() => {
+        const usdRate = getRateByCode('USD');
+        const eurRate = getRateByCode('EUR');
+
+        const usdtAverage = usdtRates
+            ? ((usdtRates.buyAverage + usdtRates.sellAverage) / 2)
+            : null;
+
+        const currentSnapshot = {
+            timestamp: Date.now(),
+            bcvUsd: usdRate?.baseValue ?? null,
+            bcvEur: eurRate?.baseValue ?? null,
+            usdt: usdtAverage,
+            buyAverage: usdtRates?.buyAverage ?? null,
+            sellAverage: usdtRates?.sellAverage ?? null,
+        };
+
         return buildUnifiedHistoryData({
             bcvHistory,
             usdtHistory: usdtHistoryByRange?.[range],
             range,
+            currentSnapshot,
         });
-    }, [bcvHistory, usdtHistoryByRange, range]);
+    }, [bcvHistory, usdtHistoryByRange, range, getRateByCode, usdtRates]);
 
     const seriesConfig = useMemo(() => ([
         {
@@ -203,17 +226,26 @@ export default function HistoryPanel() {
 
     const toggleSeriesVisibility = (seriesKey) => {
         if (seriesKey === 'bcvUsd') {
-            setShowUsdBcv((current) => !current);
+            setHistorySeriesVisibility({
+                ...historySeriesVisibility,
+                bcvUsd: !showUsdBcv,
+            });
             return;
         }
 
         if (seriesKey === 'bcvEur') {
-            setShowEurBcv((current) => !current);
+            setHistorySeriesVisibility({
+                ...historySeriesVisibility,
+                bcvEur: !showEurBcv,
+            });
             return;
         }
 
         if (seriesKey === 'usdt') {
-            setShowUsdt((current) => !current);
+            setHistorySeriesVisibility({
+                ...historySeriesVisibility,
+                usdt: !showUsdt,
+            });
         }
     };
 

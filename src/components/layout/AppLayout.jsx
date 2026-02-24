@@ -3,6 +3,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import NavigationDrawer from './NavigationDrawer';
+import FeatureAnnouncementsPopup from '../common/FeatureAnnouncementsPopup';
 
 const DRAWER_WIDTH = 280;
 
@@ -54,6 +55,8 @@ export default function AppLayout() {
                     <Outlet />
                 </Box>
             </Box>
+
+            <FeatureAnnouncementsPopup />
         </Box>
     );
 }

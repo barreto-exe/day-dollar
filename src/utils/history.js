@@ -109,7 +109,7 @@ function applyExponentialSmoothing(values, alpha = 0.18) {
   });
 }
 
-export function buildUnifiedHistoryData({ bcvHistory, usdtHistory, range }) {
+export function buildUnifiedHistoryData({ bcvHistory, usdtHistory, range, currentSnapshot = null }) {
   const usdtPoints = usdtHistory?.data || [];
 
   if (!usdtPoints.length) {
@@ -161,9 +161,35 @@ export function buildUnifiedHistoryData({ bcvHistory, usdtHistory, range }) {
   const bcvUsdSmoothed = applyExponentialSmoothing(baseSeries.map((point) => point.bcvUsd));
   const bcvEurSmoothed = applyExponentialSmoothing(baseSeries.map((point) => point.bcvEur));
 
-  return baseSeries.map((point, index) => ({
+  const withSmoothing = baseSeries.map((point, index) => ({
     ...point,
     bcvUsdSmooth: bcvUsdSmoothed[index],
     bcvEurSmooth: bcvEurSmoothed[index],
   }));
+
+  if (!currentSnapshot?.timestamp) {
+    return withSmoothing;
+  }
+
+  const lastPoint = withSmoothing[withSmoothing.length - 1];
+  const hasEnoughTimeGap = !lastPoint || (currentSnapshot.timestamp - lastPoint.timestamp) > (5 * 60 * 1000);
+
+  if (!hasEnoughTimeGap) {
+    return withSmoothing;
+  }
+
+  const currentPoint = {
+    timestamp: currentSnapshot.timestamp,
+    usdt: currentSnapshot.usdt ?? null,
+    bcvUsd: currentSnapshot.bcvUsd ?? null,
+    bcvEur: currentSnapshot.bcvEur ?? null,
+    buyAverage: currentSnapshot.buyAverage ?? null,
+    sellAverage: currentSnapshot.sellAverage ?? null,
+    gapUsdUsdt: calculateGapPercent(currentSnapshot.bcvUsd ?? null, currentSnapshot.usdt ?? null),
+    gapEurUsdt: calculateGapPercent(currentSnapshot.bcvEur ?? null, currentSnapshot.usdt ?? null),
+    bcvUsdSmooth: currentSnapshot.bcvUsd ?? null,
+    bcvEurSmooth: currentSnapshot.bcvEur ?? null,
+  };
+
+  return [...withSmoothing, currentPoint];
 }
