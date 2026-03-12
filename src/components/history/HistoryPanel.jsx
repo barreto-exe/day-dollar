@@ -224,6 +224,47 @@ export default function HistoryPanel() {
         [seriesConfig]
     );
 
+    const yDomain = useMemo(() => {
+        if (!historyData.length || !activeSeries.length) {
+            return [0, 'auto'];
+        }
+
+        const values = [];
+
+        historyData.forEach((point) => {
+            activeSeries.forEach((series) => {
+                let value = null;
+
+                if (series.key === 'bcvUsd') {
+                    value = point.bcvUsdSmooth ?? point.bcvUsd;
+                } else if (series.key === 'bcvEur') {
+                    value = point.bcvEurSmooth ?? point.bcvEur;
+                } else if (series.key === 'usdt') {
+                    value = point.usdt;
+                }
+
+                if (value != null && Number.isFinite(value)) {
+                    values.push(value);
+                }
+            });
+        });
+
+        if (!values.length) {
+            return [0, 'auto'];
+        }
+
+        const minValue = Math.min(...values);
+        const maxValue = Math.max(...values);
+
+        // Keep a small breathing space around the visible range so peaks are readable.
+        const span = Math.max(maxValue - minValue, 1);
+        const padding = Math.max(span * 0.12, 2);
+        const domainMin = minValue - padding;
+        const domainMax = maxValue + padding;
+
+        return [domainMin, domainMax];
+    }, [activeSeries, historyData]);
+
     const toggleSeriesVisibility = (seriesKey) => {
         if (seriesKey === 'bcvUsd') {
             setHistorySeriesVisibility({
@@ -410,6 +451,8 @@ export default function HistoryPanel() {
                                         width={56}
                                         stroke={theme.palette.text.secondary}
                                         tick={{ fontSize: 11 }}
+                                        tickCount={6}
+                                        domain={yDomain}
                                     />
                                     <Tooltip content={<CompactTooltip locale={locale} range={range} activeSeries={activeSeries} />} />
 
