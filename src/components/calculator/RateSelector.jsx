@@ -87,7 +87,7 @@ export default function RateSelector({ selectedRate, onChange }) {
                     },
                 }}
             >
-                {Object.values(RATE_TYPES).map((rateType) => {
+                {[RATE_TYPES.USD_BCV, RATE_TYPES.EUR_BCV, RATE_TYPES.USDT].map((rateType) => {
                     const info = RATE_INFO[rateType];
                     const isSelected = selectedRate === rateType;
                     const rateLabel = i18n.language === 'en' ? info.labelEn : info.label;
