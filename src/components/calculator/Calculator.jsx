@@ -25,9 +25,9 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventIcon from '@mui/icons-material/Event';
 import HistoryIcon from '@mui/icons-material/History';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +66,7 @@ export default function Calculator() {
         : getRateByCode(rateInfo?.code);
     const nextRate = isBcvRate ? getNextRateByCode(rateInfo?.code) : null;
 
-    // Calculate gap between selected rate and USDT (or BCV if USDT is selected)
+    // Calculate percentage gap between selected rate and USDT (or BCV if USDT is selected)
     const rateComparison = useMemo(() => {
         if (!usdtRates) return null;
 
@@ -81,21 +81,14 @@ export default function Calculator() {
             if (bcvRate === 0) return null;
 
             const gapPercent = ((usdtAverage - bcvRate) / bcvRate) * 100;
-
-            // Calculate BCV USD equivalent for current Bs amount
             const bsValue = parseFloat(bsAmount) || 0;
             const bcvEquivalent = bsValue > 0 ? bsValue / bcvRate : 0;
 
             return {
-                type: 'usdt-vs-bcv',
-                label: t('calc.bcvEquivalent'),
-                primaryLabel: 'USDT',
-                primaryRate: usdtAverage,
-                secondaryLabel: 'Dólar BCV',
-                secondaryRate: bcvRate,
+                label: t('calc.usdtUsdGap'),
                 percent: gapPercent,
                 isPositive: gapPercent > 0,
-                bcvEquivalent: bcvEquivalent,
+                bcvEquivalent,
                 hasEquivalent: bsValue > 0,
             };
         }
@@ -108,47 +101,29 @@ export default function Calculator() {
             // For USD BCV, compare directly with USDT
             if (selectedRate === RATE_TYPES.USD_BCV) {
                 const gapPercent = ((usdtAverage - currentBcvRate) / currentBcvRate) * 100;
-
-                // Calculate USDT equivalent for current Bs amount
                 const bsValue = parseFloat(bsAmount) || 0;
                 const usdtEquivalent = bsValue > 0 ? bsValue / usdtAverage : 0;
 
                 return {
-                    type: 'bcv-vs-usdt',
-                    label: t('calc.usdtEquivalent'),
-                    primaryLabel: 'USDT',
-                    primaryRate: usdtAverage,
-                    secondaryLabel: 'Dólar BCV',
-                    secondaryRate: currentBcvRate,
+                    label: t('calc.usdtUsdGap'),
                     percent: gapPercent,
                     isPositive: gapPercent > 0,
-                    usdtEquivalent: usdtEquivalent,
+                    usdtEquivalent,
                     hasEquivalent: bsValue > 0,
                 };
             }
 
-            // For EUR BCV, show the USDT rate and gap
+            // For EUR BCV, compare USDT directly against EUR BCV
             if (selectedRate === RATE_TYPES.EUR_BCV) {
-                // Get USD BCV rate to compare with USDT
-                const usdBcvRate = getRateByCode('USD');
-                if (!usdBcvRate) return null;
-
-                const gapPercent = ((usdtAverage - usdBcvRate.baseValue) / usdBcvRate.baseValue) * 100;
-
-                // Calculate USDT equivalent for current Bs amount
+                const gapPercent = ((usdtAverage - currentBcvRate) / currentBcvRate) * 100;
                 const bsValue = parseFloat(bsAmount) || 0;
                 const usdtEquivalent = bsValue > 0 ? bsValue / usdtAverage : 0;
 
                 return {
-                    type: 'bcv-vs-usdt',
-                    label: t('calc.usdtEquivalent'),
-                    primaryLabel: 'USDT',
-                    primaryRate: usdtAverage,
-                    secondaryLabel: 'Dólar BCV',
-                    secondaryRate: usdBcvRate.baseValue,
+                    label: t('calc.usdtEurGap'),
                     percent: gapPercent,
                     isPositive: gapPercent > 0,
-                    usdtEquivalent: usdtEquivalent,
+                    usdtEquivalent,
                     hasEquivalent: bsValue > 0,
                 };
             }
@@ -418,92 +393,6 @@ export default function Calculator() {
                 </CardContent>
             </Card>
 
-            {/* Rate Comparison Card - Shows USDT gap for all applicable rates */}
-            {rateComparison && (
-                <Card
-                    elevation={0}
-                    sx={{
-                        bgcolor: 'background.paper',
-                        border: '1px solid',
-                        borderColor: rateComparison.isPositive ? 'success.main' : 'error.main',
-                        background: rateComparison.isPositive
-                            ? 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%)'
-                            : 'linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%)',
-                    }}
-                >
-                    <CardContent sx={{ py: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Box sx={{ flex: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                                    <CurrencyBitcoinIcon sx={{ fontSize: 18, color: 'warning.main' }} />
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{ fontWeight: 600 }}
-                                    >
-                                        {rateComparison.label}
-                                    </Typography>
-                                </Box>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                >
-                                    {rateComparison.primaryLabel}: {formatNumber(rateComparison.primaryRate, 2)} Bs
-                                </Typography>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    vs {rateComparison.secondaryLabel}: {formatNumber(rateComparison.secondaryRate, 2)} Bs
-                                </Typography>
-
-                                {/* Show USDT equivalent when BCV rate is selected and there's a Bs value */}
-                                {rateComparison.hasEquivalent && rateComparison.usdtEquivalent > 0 && (
-                                    <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                fontWeight: 600,
-                                                color: 'warning.main',
-                                            }}
-                                        >
-                                            ≈ ₮{formatNumber(rateComparison.usdtEquivalent, 2)} USDT
-                                        </Typography>
-                                    </Box>
-                                )}
-
-                                {/* Show BCV equivalent when USDT is selected and there's a Bs value */}
-                                {rateComparison.hasEquivalent && rateComparison.bcvEquivalent > 0 && (
-                                    <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                fontWeight: 600,
-                                                color: 'primary.main',
-                                            }}
-                                        >
-                                            ≈ ${formatNumber(rateComparison.bcvEquivalent, 2)} Dólar BCV
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Box>
-                            <Chip
-                                icon={rateComparison.isPositive ? <TrendingUpIcon /> : <TrendingDownIcon />}
-                                label={`${rateComparison.isPositive ? '+' : ''}${formatNumber(rateComparison.percent, 2)}%`}
-                                color={rateComparison.isPositive ? 'success' : 'error'}
-                                sx={{
-                                    fontWeight: 700,
-                                    fontSize: '0.9rem',
-                                    py: 2,
-                                    '& .MuiChip-icon': {
-                                        fontSize: '1.1rem',
-                                    },
-                                }}
-                            />
-                        </Box>
-                    </CardContent>
-                </Card>
-            )}
-
             {/* Warning Alert when using next rate or historical date (BCV only) */}
             {isBcvRate && (useNextRate || isCustomDate) && !warningDismissed && (
                 <Collapse in={!warningDismissed}>
@@ -521,6 +410,94 @@ export default function Calculator() {
                         {useNextRate ? t('nextRate.warning') : t('nextRate.historicalWarning')}
                     </Alert>
                 </Collapse>
+            )}
+
+            {/* Rate Comparison Card - Shows USDT gap for all applicable rates */}
+            {rateComparison && (
+                <Card
+                    elevation={0}
+                    sx={{
+                        bgcolor: 'background.paper',
+                        border: '1px solid',
+                        borderColor: rateComparison.isPositive ? 'success.main' : 'error.main',
+                        background: rateComparison.isPositive
+                            ? 'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%)'
+                            : 'linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%)',
+                    }}
+                >
+                    <CardContent
+                        sx={{
+                            py: 1.25,
+                            px: 2,
+                            '&:last-child': {
+                                pb: 1.25,
+                            },
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                minHeight: 40,
+                                gap: 1.5,
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box
+                                    sx={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
+                                        display: 'grid',
+                                        placeItems: 'center',
+                                        bgcolor: rateComparison.isPositive ? 'rgba(76, 175, 80, 0.18)' : 'rgba(244, 67, 54, 0.18)',
+                                        flexShrink: 0,
+                                    }}
+                                >
+                                    <SwapHorizIcon
+                                        sx={{
+                                            fontSize: 15,
+                                            color: rateComparison.isPositive ? 'success.main' : 'error.main',
+                                        }}
+                                    />
+                                </Box>
+                                <Typography
+                                    variant="subtitle2"
+                                    sx={{
+                                        fontWeight: 700,
+                                        lineHeight: 1.1,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {rateComparison.label || t('calc.usdtBcvGap')}
+                                </Typography>
+                            </Box>
+                            <Chip
+                                icon={rateComparison.isPositive ? <TrendingUpIcon /> : <TrendingDownIcon />}
+                                label={`${rateComparison.isPositive ? '+' : ''}${formatNumber(rateComparison.percent, 2)}%`}
+                                color={rateComparison.isPositive ? 'success' : 'error'}
+                                sx={{
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem',
+                                    height: 36,
+                                    flexShrink: 0,
+                                    '& .MuiChip-label': {
+                                        px: 1.25,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        lineHeight: 1,
+                                    },
+                                    '& .MuiChip-icon': {
+                                        fontSize: '1rem',
+                                    },
+                                }}
+                            />
+                        </Box>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Main Calculator Card */}
@@ -555,17 +532,17 @@ export default function Calculator() {
                     {/* Conversion Inputs */}
                     <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <ConversionInput
-                            label={rateInfo?.symbol || '$'}
-                            value={foreignAmount}
-                            onChange={handleForeignAmountChange}
-                            currencyCode={rateInfo?.code || 'USD'}
-                        />
-
-                        <ConversionInput
                             label="Bs"
                             value={bsAmount}
                             onChange={handleBsAmountChange}
                             currencyCode="VEF"
+                        />
+
+                        <ConversionInput
+                            label={rateInfo?.symbol || '$'}
+                            value={foreignAmount}
+                            onChange={handleForeignAmountChange}
+                            currencyCode={rateInfo?.code || 'USD'}
                         />
                     </Box>
 
@@ -608,6 +585,15 @@ export default function Calculator() {
                         )}
                     </Box>
 
+                    {/* Quick Amounts */}
+                    <Box sx={{ mt: 2 }}>
+                        <QuickAmounts
+                            amounts={rateInfo?.quickAmounts || [5, 10, 20, 50, 100]}
+                            symbol={rateInfo?.symbol || '$'}
+                            onSelect={handleQuickAmount}
+                        />
+                    </Box>
+
                     {/* Action Buttons - excluded from screenshot */}
                     <Box
                         sx={{
@@ -642,14 +628,6 @@ export default function Calculator() {
                     </Box>
                 </CardContent>
             </Card>
-
-            {/* Quick Amounts */}
-            <QuickAmounts
-                amounts={rateInfo?.quickAmounts || [5, 10, 20, 50, 100]}
-                symbol={rateInfo?.symbol || '$'}
-                onSelect={handleQuickAmount}
-            />
-
 
             {/* Next Rate Confirmation Modal */}
             <Dialog

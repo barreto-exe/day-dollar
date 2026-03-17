@@ -1,19 +1,8 @@
-import { Box, Button, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Box, Button } from '@mui/material';
 
 export default function QuickAmounts({ amounts, symbol, onSelect }) {
-    const { t } = useTranslation();
-
     return (
         <Box>
-            <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mb: 1, display: 'block' }}
-            >
-                {t('calc.quickAmounts')}
-            </Typography>
-
             <Box
                 sx={{
                     display: 'flex',
