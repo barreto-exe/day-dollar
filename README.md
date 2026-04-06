@@ -64,7 +64,7 @@ Consultas principales implementadas:
 
 Además, hay ejemplos de endpoints/operaciones en:
 
-- `/endpoints samples`
+- `./endpoints samples` (directorio existente en el repositorio)
 
 ## Estructura del proyecto
 
@@ -105,4 +105,4 @@ Configuración Firebase:
 
 ## Licencia
 
-No se encontró una licencia explícita en este repositorio. Si vas a reutilizar el proyecto, define una licencia antes de distribuirlo.
+Este repositorio no incluye actualmente un archivo de licencia (`LICENSE`).
