@@ -1,6 +1,10 @@
-# Day Dollar
+# Day Dollar 💰
 
 Aplicación web (React + Vite) para consultar y convertir tasas del Bolívar venezolano usando datos de **BCV** y promedios **USDT (Binance P2P)**.
+
+Este es un proyecto hecho 100% a partir de inteligencia artificial. 🤖
+
+![Image](https://i.imgur.com/KVI9HXY.png)
 
 ## Características principales
 
