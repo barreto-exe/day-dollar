@@ -1,0 +1,7 @@
+{
+  "operationName": "getUsdtHistoricalData",
+  "variables": {
+    "range": "3M" //Posible values: "24H", "7D", "1M", "3M"
+  },
+  "query": "query getUsdtHistoricalData($range: String!) {\n  getUsdtHistoricalData(range: $range) {\n    data {\n      date\n      averageValue\n      sellAverage\n      buyAverage\n      __typename\n    }\n    range\n    __typename\n  }\n}"
+}

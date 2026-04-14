@@ -260,13 +260,9 @@ export function RatesProvider({ children }) {
                 );
 
                 if (otherRate) {
-                    // synthesize a rate object using lastBaseValue
-                    // Note: This relies on lastBaseValue being populated correctly
                     rate = {
                         ...otherRate,
-                        baseValue: otherRate.lastBaseValue || otherRate.baseValue, // Fallback if 0
-                        // changePercent might be misleading here since it compares base vs last.
-                        // Ideally we'd zero it out or use a different source, but for now keeping as is or 0
+                        baseValue: otherRate.baseValue,
                         increaseDecreasePercentBase: { percentValue: 0, isDown: false }
                     };
                 }

@@ -1,0 +1,7 @@
+{
+  "operationName": "getAppStatistics",
+  "variables": {
+    "countryCode": "VE"
+  },
+  "query": "query getAppStatistics($countryCode: String!) {\n  getAppStatistics(payload: {countryCode: $countryCode, type: \"CONVERSIONS\"}) {\n    _id\n    last90Days {\n      currencies {\n        baseValue\n        rateValue\n        rateCurrencyCode\n        type\n        usesRateValue\n        __typename\n      }\n      date\n      __typename\n    }\n    last365Days {\n      currencies {\n        baseValue\n        rateValue\n        rateCurrencyCode\n        type\n        usesRateValue\n        __typename\n      }\n      date\n      __typename\n    }\n    country {\n      code\n      dial_code\n      flag\n      name\n      __typename\n    }\n    type\n    createdAt\n    __typename\n  }\n}"
+}

@@ -1,0 +1,640 @@
+{
+  "data": {
+    "getUsdtHistoricalData": {
+      "data": [
+        {
+          "date": 1764201600000,
+          "averageValue": 376.1,
+          "sellAverage": 373.68,
+          "buyAverage": 378.52,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764288000000,
+          "averageValue": 367.68,
+          "sellAverage": 365.34,
+          "buyAverage": 370.01,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764374400000,
+          "averageValue": 368.82,
+          "sellAverage": 366.41,
+          "buyAverage": 371.23,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764460800000,
+          "averageValue": 370.86,
+          "sellAverage": 367.66,
+          "buyAverage": 374.06,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764547200000,
+          "averageValue": 377.95,
+          "sellAverage": 374.8,
+          "buyAverage": 381.09,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764640800000,
+          "averageValue": 390.45,
+          "sellAverage": 387.95,
+          "buyAverage": 392.96,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764720000000,
+          "averageValue": 403.16,
+          "sellAverage": 400.94,
+          "buyAverage": 405.37,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764806400000,
+          "averageValue": 414.54,
+          "sellAverage": 412.59,
+          "buyAverage": 416.49,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764892800000,
+          "averageValue": 423.74,
+          "sellAverage": 421.43,
+          "buyAverage": 426.04,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1764979200000,
+          "averageValue": 423.65,
+          "sellAverage": 421.11,
+          "buyAverage": 426.18,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765065600000,
+          "averageValue": 418.5,
+          "sellAverage": 415.27,
+          "buyAverage": 421.73,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765152000000,
+          "averageValue": 420.46,
+          "sellAverage": 417.54,
+          "buyAverage": 423.38,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765238400000,
+          "averageValue": 419.95,
+          "sellAverage": 417.54,
+          "buyAverage": 422.36,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765324800000,
+          "averageValue": 424.01,
+          "sellAverage": 421.6,
+          "buyAverage": 426.42,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765411200000,
+          "averageValue": 426.62,
+          "sellAverage": 424.3,
+          "buyAverage": 428.94,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765497600000,
+          "averageValue": 425.99,
+          "sellAverage": 424.28,
+          "buyAverage": 427.7,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765584000000,
+          "averageValue": 424.19,
+          "sellAverage": 421.58,
+          "buyAverage": 426.81,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765670400000,
+          "averageValue": 420.43,
+          "sellAverage": 417.4,
+          "buyAverage": 423.46,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765756800000,
+          "averageValue": 423.13,
+          "sellAverage": 420.54,
+          "buyAverage": 425.72,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765843200000,
+          "averageValue": 431.58,
+          "sellAverage": 429.54,
+          "buyAverage": 433.62,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1765929600000,
+          "averageValue": 442.17,
+          "sellAverage": 439.83,
+          "buyAverage": 444.51,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766016000000,
+          "averageValue": 468.41,
+          "sellAverage": 465.53,
+          "buyAverage": 471.3,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766102400000,
+          "averageValue": 483.21,
+          "sellAverage": 479.04,
+          "buyAverage": 487.38,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766188800000,
+          "averageValue": 473.67,
+          "sellAverage": 469.64,
+          "buyAverage": 477.7,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766275200000,
+          "averageValue": 472.12,
+          "sellAverage": 468.14,
+          "buyAverage": 476.1,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766361600000,
+          "averageValue": 482.38,
+          "sellAverage": 478.19,
+          "buyAverage": 486.58,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766448000000,
+          "averageValue": 483.2,
+          "sellAverage": 479.65,
+          "buyAverage": 486.75,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766534400000,
+          "averageValue": 485.83,
+          "sellAverage": 482.59,
+          "buyAverage": 489.06,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766620800000,
+          "averageValue": 494.84,
+          "sellAverage": 489.74,
+          "buyAverage": 499.94,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766707200000,
+          "averageValue": 513.98,
+          "sellAverage": 508.97,
+          "buyAverage": 519,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766793600000,
+          "averageValue": 548.8,
+          "sellAverage": 544.45,
+          "buyAverage": 553.15,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766880000000,
+          "averageValue": 546.95,
+          "sellAverage": 542.1,
+          "buyAverage": 551.8,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1766966400000,
+          "averageValue": 549.02,
+          "sellAverage": 545.4,
+          "buyAverage": 552.64,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767052800000,
+          "averageValue": 566.28,
+          "sellAverage": 563.06,
+          "buyAverage": 569.51,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767139200000,
+          "averageValue": 575.44,
+          "sellAverage": 571.32,
+          "buyAverage": 579.57,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767225600000,
+          "averageValue": 565.99,
+          "sellAverage": 554.13,
+          "buyAverage": 577.84,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767312000000,
+          "averageValue": 579.01,
+          "sellAverage": 572.65,
+          "buyAverage": 585.37,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767398400000,
+          "averageValue": 611.82,
+          "sellAverage": 597.54,
+          "buyAverage": 626.1,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767484800000,
+          "averageValue": 607.09,
+          "sellAverage": 599.47,
+          "buyAverage": 614.7,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767571200000,
+          "averageValue": 608,
+          "sellAverage": 604.48,
+          "buyAverage": 611.51,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767657600000,
+          "averageValue": 673.21,
+          "sellAverage": 666.56,
+          "buyAverage": 679.86,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767744000000,
+          "averageValue": 768.18,
+          "sellAverage": 754.86,
+          "buyAverage": 781.5,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767830400000,
+          "averageValue": 755.36,
+          "sellAverage": 743.66,
+          "buyAverage": 767.07,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1767916800000,
+          "averageValue": 675.44,
+          "sellAverage": 663.54,
+          "buyAverage": 687.35,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768003200000,
+          "averageValue": 562.65,
+          "sellAverage": 552.46,
+          "buyAverage": 572.83,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768089600000,
+          "averageValue": 514.99,
+          "sellAverage": 504.35,
+          "buyAverage": 525.62,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768176000000,
+          "averageValue": 525.34,
+          "sellAverage": 519.52,
+          "buyAverage": 531.16,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768262400000,
+          "averageValue": 565.89,
+          "sellAverage": 561.96,
+          "buyAverage": 569.81,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768348800000,
+          "averageValue": 606.93,
+          "sellAverage": 602.49,
+          "buyAverage": 611.36,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768435200000,
+          "averageValue": 558.56,
+          "sellAverage": 548.47,
+          "buyAverage": 568.65,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768521600000,
+          "averageValue": 479.25,
+          "sellAverage": 471.71,
+          "buyAverage": 486.79,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768608000000,
+          "averageValue": 452.73,
+          "sellAverage": 446.94,
+          "buyAverage": 458.51,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768694400000,
+          "averageValue": 452.12,
+          "sellAverage": 447.42,
+          "buyAverage": 456.83,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768780800000,
+          "averageValue": 439.67,
+          "sellAverage": 434.57,
+          "buyAverage": 444.77,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768867200000,
+          "averageValue": 430.68,
+          "sellAverage": 425.71,
+          "buyAverage": 435.64,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1768953600000,
+          "averageValue": 459.93,
+          "sellAverage": 456.4,
+          "buyAverage": 463.46,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769040000000,
+          "averageValue": 463.17,
+          "sellAverage": 460.71,
+          "buyAverage": 465.63,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769126400000,
+          "averageValue": 462.65,
+          "sellAverage": 459.84,
+          "buyAverage": 465.46,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769212800000,
+          "averageValue": 472.77,
+          "sellAverage": 470.76,
+          "buyAverage": 474.79,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769299200000,
+          "averageValue": 473.45,
+          "sellAverage": 470.68,
+          "buyAverage": 476.21,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769385600000,
+          "averageValue": 482.58,
+          "sellAverage": 479.67,
+          "buyAverage": 485.49,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769472000000,
+          "averageValue": 530.67,
+          "sellAverage": 527.91,
+          "buyAverage": 533.42,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769558400000,
+          "averageValue": 536.4,
+          "sellAverage": 532.94,
+          "buyAverage": 539.86,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769644800000,
+          "averageValue": 525.93,
+          "sellAverage": 523.14,
+          "buyAverage": 528.71,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769731200000,
+          "averageValue": 513.15,
+          "sellAverage": 510.21,
+          "buyAverage": 516.09,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769817600000,
+          "averageValue": 513.04,
+          "sellAverage": 510.67,
+          "buyAverage": 515.41,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769904000000,
+          "averageValue": 511.64,
+          "sellAverage": 508.55,
+          "buyAverage": 514.72,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1769990400000,
+          "averageValue": 516.85,
+          "sellAverage": 513.59,
+          "buyAverage": 520.11,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770076800000,
+          "averageValue": 525.96,
+          "sellAverage": 522.61,
+          "buyAverage": 529.31,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770163200000,
+          "averageValue": 528.58,
+          "sellAverage": 526.38,
+          "buyAverage": 530.77,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770249600000,
+          "averageValue": 533.91,
+          "sellAverage": 531.68,
+          "buyAverage": 536.15,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770336000000,
+          "averageValue": 547.09,
+          "sellAverage": 545.04,
+          "buyAverage": 549.14,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770422400000,
+          "averageValue": 547.23,
+          "sellAverage": 544.84,
+          "buyAverage": 549.62,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770508800000,
+          "averageValue": 541.91,
+          "sellAverage": 538.02,
+          "buyAverage": 545.8,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770595200000,
+          "averageValue": 542.11,
+          "sellAverage": 538.97,
+          "buyAverage": 545.24,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770681600000,
+          "averageValue": 548.58,
+          "sellAverage": 546.17,
+          "buyAverage": 551,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770768000000,
+          "averageValue": 550.28,
+          "sellAverage": 547.91,
+          "buyAverage": 552.65,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770854400000,
+          "averageValue": 548.7,
+          "sellAverage": 546.72,
+          "buyAverage": 550.67,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1770940800000,
+          "averageValue": 539.49,
+          "sellAverage": 537.25,
+          "buyAverage": 541.73,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771027200000,
+          "averageValue": 531.93,
+          "sellAverage": 529.43,
+          "buyAverage": 534.43,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771113600000,
+          "averageValue": 534.13,
+          "sellAverage": 531.31,
+          "buyAverage": 536.95,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771200000000,
+          "averageValue": 537.85,
+          "sellAverage": 535.27,
+          "buyAverage": 540.43,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771286400000,
+          "averageValue": 532.79,
+          "sellAverage": 529.69,
+          "buyAverage": 535.89,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771372800000,
+          "averageValue": 542.57,
+          "sellAverage": 540.68,
+          "buyAverage": 544.47,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771459200000,
+          "averageValue": 574.69,
+          "sellAverage": 572.76,
+          "buyAverage": 576.61,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771545600000,
+          "averageValue": 578.65,
+          "sellAverage": 576.17,
+          "buyAverage": 581.12,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771632000000,
+          "averageValue": 572.7,
+          "sellAverage": 569.85,
+          "buyAverage": 575.55,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771718400000,
+          "averageValue": 568.14,
+          "sellAverage": 565.35,
+          "buyAverage": 570.93,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771804800000,
+          "averageValue": 573.77,
+          "sellAverage": 570.68,
+          "buyAverage": 576.86,
+          "__typename": "UsdtHistoricalDataPoint"
+        },
+        {
+          "date": 1771891200000,
+          "averageValue": 605.42,
+          "sellAverage": 603.18,
+          "buyAverage": 607.66,
+          "__typename": "UsdtHistoricalDataPoint"
+        }
+      ],
+      "range": "3M",
+      "__typename": "UsdtHistoricalData"
+    }
+  }
+}
