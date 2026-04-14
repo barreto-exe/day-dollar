@@ -242,30 +242,17 @@ export function RatesProvider({ children }) {
         let rate;
 
         if (useEffectiveRate) {
-            // WE WANT CURRENT EFFECTIVE RATE (From the "Previous" perspective of this future doc)
+            // WE WANT CURRENT EFFECTIVE RATE: use lastBaseValue from OTHER for all currencies
+            const otherRate = bcvRates.conversionRates.find(
+                (r) => r.rateCurrency.code === code && r.type === 'OTHER'
+            );
 
-            // For USD: Use SECONDARY (which typically holds the previous/current rate in a Future doc)
-            if (code === 'USD') {
-                rate = bcvRates.conversionRates.find(
-                    (r) => r.rateCurrency.code === code && r.type === 'SECONDARY'
-                );
-            }
-
-            // For EUR and others: We usually only have OTHER.
-            // We must use 'lastBaseValue' to get the previous rate.
-            // But we need the 'OTHER' record first.
-            if (!rate && code !== 'USD') {
-                const otherRate = bcvRates.conversionRates.find(
-                    (r) => r.rateCurrency.code === code && r.type === 'OTHER'
-                );
-
-                if (otherRate) {
-                    rate = {
-                        ...otherRate,
-                        baseValue: otherRate.baseValue,
-                        increaseDecreasePercentBase: { percentValue: 0, isDown: false }
-                    };
-                }
+            if (otherRate) {
+                rate = {
+                    ...otherRate,
+                    baseValue: otherRate.lastBaseValue || otherRate.baseValue,
+                    increaseDecreasePercentBase: { percentValue: 0, isDown: false }
+                };
             }
         }
 
